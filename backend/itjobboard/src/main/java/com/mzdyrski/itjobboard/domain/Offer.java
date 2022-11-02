@@ -1,20 +1,32 @@
 package com.mzdyrski.itjobboard.domain;
 
+import com.mzdyrski.itjobboard.dataTemplates.AddressData;
+import com.mzdyrski.itjobboard.dataTemplates.ContractData;
+import com.mzdyrski.itjobboard.dataTemplates.SkillData;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 
+@Data
+@Document(collection = "offers")
 @NoArgsConstructor
-@AllArgsConstructor
 public class Offer {
-    private Long id;
-    private Long employerId;
+    @Id
+    private String id;
+    private String employerId;
     private String title;
-    private String location;
+    private AddressData address;
     private String remote;
-    private String money;
-    private String tags;
+    private ContractData[] contracts;
+    private String salaryShort;
+    private String experienceLevel;
+    private SkillData[] techStack;
+    private String[] tags;
     private Date date;
     private String description;
+    private boolean approved;
 }

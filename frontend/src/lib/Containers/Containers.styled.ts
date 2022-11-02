@@ -13,3 +13,10 @@ export const BackgroundContainer = styled('div', {
   justifyContent: 'start',
   alignItems: 'center',
 });
+
+export const RowCenterContainer = styled('div', {
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'center',
+  alignItems: 'center',
+});

@@ -1,4 +1,9 @@
 package com.mzdyrski.itjobboard.dataTemplates;
 
-public class UserUpdateData {
+public record UserUpdateData(String firstName,
+                             String lastName,
+                             String companyName,
+                             Long companySize,
+                             String companySiteUrl,
+                             String companyLogoUrl) {
 }

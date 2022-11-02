@@ -7,6 +7,7 @@ export const MainContainer = styled('div', {
 
 export const StyledTextField = styled(TextField, {
   '&.MuiTextField-root': {
+    margin: '1rem 0',
     color: '$secondaryColor',
     '& .MuiInput-underline:after': {
       borderBottomColor: '$violetColor',
@@ -18,5 +19,4 @@ export const StyledTextField = styled(TextField, {
       color: '$violetColor',
     },
   },
-
 });

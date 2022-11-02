@@ -2,5 +2,8 @@ package com.mzdyrski.itjobboard.domain;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 
-public interface OfferRepository extends MongoRepository<User, Long> {
+import java.util.List;
+
+public interface OfferRepository extends MongoRepository<Offer, String> {
+    List<Offer> findAllByEmployerId(String employerId);
 }

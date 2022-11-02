@@ -56,8 +56,8 @@ export const SkillLevel = styled('div', {
 });
 
 export const LevelDot = styled('div', {
-  height: '0.7rem',
-  width: '0.7rem',
+  height: '0.9rem',
+  width: '0.9rem',
   borderRadius: '50%',
   marginRight: '0.3rem',
   backgroundColor: '$tertiaryColor',

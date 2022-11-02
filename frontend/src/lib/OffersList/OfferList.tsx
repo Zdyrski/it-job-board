@@ -8,12 +8,16 @@ function OfferList({ data } : OffersListInterface) {
     <ListContainer>
       {data.map((offer : OfferInterface) => (
         <Offer
-          key={offer.id}
-          companyInfo={offer.companyInfo}
-          offerName={offer.offerName}
+          key={offer.offerId}
+          title={offer.title}
+          companyLogoUrl={offer.companyLogoUrl}
+          companyName={offer.companyName}
+          city={offer.city}
+          remote={offer.remote}
           salary={offer.salary}
-          tagline={offer.tagline}
-          id={offer.id}
+          tags={offer.tags}
+          offerId={offer.offerId}
+          date={offer.date}
         />
       ))}
     </ListContainer>

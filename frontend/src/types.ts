@@ -5,7 +5,7 @@ export interface OfferTaglineInterface {
     companyName: string
     location: string
     remote: string
-    mainTags: Array<string>
+    mainTags: string[]
 }
 
 export interface MoneyRangeInterface {
@@ -20,11 +20,15 @@ export interface CompanyInterface {
 }
 
 export interface OfferInterface {
-    companyInfo: CompanyInterface
-    offerName: string
-    salary : MoneyRangeInterface
-    tagline: OfferTaglineInterface
-    id: number
+    offerId: string
+    city: string;
+    companyLogoUrl: string
+    companyName: string
+    date : string
+    remote: string
+    salary: string
+    tags: string[]
+    title: string
 }
 
 export interface OffersListInterface {
@@ -34,4 +38,18 @@ export interface OffersListInterface {
 export interface SkillInterface {
     skillName: string
     level: number
+}
+
+export interface contractInterface {
+    name: string
+    salaryUndisclosed: boolean
+    minMoney: number
+    maxMoney: number
+}
+
+export interface AlertsComponentInterface {
+    openError: boolean
+    openSuccess: boolean
+    errorMessage: string
+    successMessage: string
 }

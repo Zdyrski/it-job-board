@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import ListLogo from '../CompanyLogo/ListLogo';
-import MoneyRange from '../MoneyRange/MoneyRange';
 import OfferTagline from '../OfferTagline/OfferTagline';
 import {
   MainContainer, OfferDetails, FirstRow, Name, SecondRow, ThirdRow, DateTag,
@@ -9,31 +8,36 @@ import {
 import { OfferInterface } from '../../types';
 
 function Offer({
-  companyInfo, offerName, salary, tagline, id,
+  offerId,
+  city,
+  companyLogoUrl,
+  companyName,
+  // eslint-disable-next-line no-unused-vars
+  date,
+  remote,
+  salary,
+  tags,
+  title,
 } : OfferInterface) {
   const navigate = useNavigate();
 
   return (
-    <MainContainer onClick={() => navigate(`/offers/${id}`)}>
-      <ListLogo name={companyInfo.name} logoSrc={companyInfo.logoSrc} />
+    <MainContainer onClick={() => navigate(`/offers/${offerId}`)}>
+      <ListLogo name={companyName} logoSrc={companyLogoUrl} />
       <OfferDetails>
         <FirstRow>
-          <Name>{offerName}</Name>
+          <Name>{title}</Name>
           <DateTag>7d ago</DateTag>
         </FirstRow>
         <SecondRow>
-          <MoneyRange
-            min={salary.min}
-            max={salary.max}
-            currency={salary.currency}
-          />
+          {salary}
         </SecondRow>
         <ThirdRow>
           <OfferTagline
-            companyName={companyInfo.name}
-            location={tagline.location}
-            remote={tagline.remote}
-            mainTags={tagline.mainTags}
+            companyName={companyName}
+            location={city}
+            remote={remote}
+            mainTags={tags}
           />
         </ThirdRow>
       </OfferDetails>

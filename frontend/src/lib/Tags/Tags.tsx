@@ -2,13 +2,13 @@
 import { TagContainer, TagsContainer } from './Tags.styled';
 
 interface Props {
-    tagsArray: Array<string>
+    tagsArray: string[]
 }
 
 function Tags({ tagsArray } : Props) {
   return (
     <TagsContainer>
-      {tagsArray.map((tag : String, index) => (
+      {tagsArray?.map((tag : String, index) => (
         <TagContainer key={index}>{tag}</TagContainer>
       ))}
     </TagsContainer>

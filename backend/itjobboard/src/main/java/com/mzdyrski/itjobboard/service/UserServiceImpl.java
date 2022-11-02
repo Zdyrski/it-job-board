@@ -1,13 +1,16 @@
 package com.mzdyrski.itjobboard.service;
 
+import com.mzdyrski.itjobboard.dataTemplates.UserUpdateData;
 import com.mzdyrski.itjobboard.domain.*;
 import com.mzdyrski.itjobboard.enums.Role;
 import com.mzdyrski.itjobboard.exceptions.BadRequestDataException;
 import com.mzdyrski.itjobboard.exceptions.InvalidEmailException;
 import com.mzdyrski.itjobboard.exceptions.UserExistsException;
+import com.mzdyrski.itjobboard.security.JWTTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bson.types.Binary;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -15,15 +18,23 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.Date;
+import java.util.Objects;
+
+import static com.mzdyrski.itjobboard.constants.SecurityConstants.TOKEN_HEADER;
+import static com.mzdyrski.itjobboard.enums.Role.ROLE_EMPLOYEE;
+import static com.mzdyrski.itjobboard.enums.Role.ROLE_EMPLOYER;
 
 @RequiredArgsConstructor
 @Service
 public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepository;
+    private final EmployeesCvRepository cvRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final LoginAttemptService loginAttemptService;
+    private final JWTTokenProvider jwtTokenProvider;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -65,8 +76,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void updateUserInfo(User user) {
-
+    public void updateUserInfo(User user, UserUpdateData data) {
+        if (Objects.equals(user.getRole(), ROLE_EMPLOYEE.name())){
+            var employee = (Employee) user;
+            employee.setFirstName(data.firstName());
+            employee.setLastName(data.lastName());
+            userRepository.save(employee);
+        } else if (Objects.equals(user.getRole(), ROLE_EMPLOYER.name())) {
+            var employer = (Employer) user;
+            employer.setCompanyName(data.companyName());
+            employer.setCompanySize(data.companySize());
+            employer.setCompanyLogoUrl(data.companyLogoUrl());
+            employer.setCompanySiteUrl(data.companySiteUrl());
+            userRepository.save(employer);
+        }
     }
 
     @Override
@@ -93,10 +116,18 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public void updateCV(MultipartFile file) {
-
+    public void updateEmployeeCv(Employee employee, MultipartFile file) throws IOException {
+        if (!Objects.equals(employee.getRole(), ROLE_EMPLOYEE.name())){
+            return;
+        }
+        var cv = new EmployeesCv();
+        cv.setEmployeeId(employee.getId());
+        cv.setFilename(file.getOriginalFilename());
+        cv.setFileType(file.getContentType());
+        cv.setFileSize(file.getSize());
+        cv.setFile(new Binary(file.getBytes()));
+        cvRepository.save(cv);
     }
-
 
     private User getUserClass(String role) throws BadRequestDataException {
         return switch (role) {
@@ -119,5 +150,11 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         } else {
             throw new InvalidEmailException("Invalid Email");
         }
+    }
+
+    public User getUserFromTokenHeader(String authorizationHeader) {
+        var token = StringUtils.remove(authorizationHeader, TOKEN_HEADER);
+        var email = jwtTokenProvider.getSubject(token);
+        return findUserByEmail(email);
     }
 }

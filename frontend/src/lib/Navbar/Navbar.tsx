@@ -3,13 +3,13 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MainContainer, MainRow, Logo } from './Navbar.styled';
 import { ColorModeToggleButton } from '../Buttons/ThemeButton/ColorModeToggleButton';
-import SignInDropdown from '../Buttons/SignInDropdown/SignInDropdown';
+import LoggedMenuDropdown from '../Buttons/SignInDropdown/LoggedMenuDropdown';
 import FilterBar from '../FilterBar/FilterBar';
 
 interface NavbarInterface {
   filterBar? : boolean
 }
-
+// TODO navbar and roles
 function Navbar({ filterBar } : NavbarInterface) {
   const navigate = useNavigate();
 
@@ -18,7 +18,7 @@ function Navbar({ filterBar } : NavbarInterface) {
       <MainRow filterBar={filterBar ? 'on' : 'off'}>
         <Logo onClick={() => navigate('/')}>IT Job Board</Logo>
         <ColorModeToggleButton />
-        <SignInDropdown />
+        <LoggedMenuDropdown />
       </MainRow>
       {filterBar && <FilterBar />}
     </MainContainer>

@@ -17,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static com.mzdyrski.itjobboard.constants.SecurityConstants.EMPLOYER_URLS;
 import static com.mzdyrski.itjobboard.constants.SecurityConstants.PUBLIC_URLS;
 
 @AllArgsConstructor
@@ -25,6 +26,7 @@ import static com.mzdyrski.itjobboard.constants.SecurityConstants.PUBLIC_URLS;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration {
 
+    private static final String EMPLOYER_ROLE = "EMPLOYER_ROLE";
     private JwtAuthorizationFilter jwtAuthorizationFilter;
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -56,7 +58,7 @@ public class SecurityConfiguration {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, AuthenticationManager authManager) throws Exception {
         http
-                .csrf().disable().cors().disable()
+                .csrf().disable().cors().and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authenticationManager(authManager)
@@ -69,6 +71,4 @@ public class SecurityConfiguration {
                 .addFilterBefore(jwtAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
-
 }

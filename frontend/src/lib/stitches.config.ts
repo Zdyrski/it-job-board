@@ -104,13 +104,4 @@ export const globalStyles = globalCss({
       fontSize: '16px',
     },
   },
-  '&.MuiTextField-root': {
-    color: '$secondaryColor',
-    '& .MuiInput-underline:after': {
-      borderBottomColor: '$violetColor',
-    },
-    '& .MuiInput-input': {
-      color: '$secondaryColor',
-    },
-  },
 });
