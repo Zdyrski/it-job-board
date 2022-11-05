@@ -5,8 +5,6 @@ import {
   SkillContainer, SkillName, SkillLevel, Title,
 } from './TechStack.styled';
 
-const TEST_TECH_STACK = [{ skillName: 'Java', level: 1 }, { skillName: 'Testing', level: 3 }, { skillName: 'Debugging', level: 5 }, { skillName: 'Spring', level: 4 }, { skillName: 'Debugging', level: 5 }, { skillName: 'Spring', level: 4 }, { skillName: 'Debugging', level: 5 }, { skillName: 'Spring', level: 4 }, { skillName: 'Debugging', level: 5 }, { skillName: 'Spring', level: 4 }];
-
 const SKILL_LEVEL_MAP = new Map([
   [1, 'nice to have'],
   [2, 'junior'],
@@ -14,6 +12,10 @@ const SKILL_LEVEL_MAP = new Map([
   [4, 'advanced'],
   [5, 'expert'],
 ]);
+
+interface TechStackInterface {
+  data: SkillInterface[]
+}
 
 function getDots(level : number) {
   const dots = [];
@@ -23,14 +25,14 @@ function getDots(level : number) {
   return dots;
 }
 
-function TechStack() {
+function TechStack({ data } : TechStackInterface) {
   return (
     <MainContainer>
       <Title>Tech stack</Title>
       <SkillsContainer>
-        {TEST_TECH_STACK.sort((a, b) => b.level - a.level)
+        {data?.sort((a, b) => b.level - a.level)
           .map((skill : SkillInterface) => (
-            <SkillContainer>
+            <SkillContainer key={skill.skillName}>
               <LevelDotsContainer>
                 {getDots(skill.level)}
               </LevelDotsContainer>

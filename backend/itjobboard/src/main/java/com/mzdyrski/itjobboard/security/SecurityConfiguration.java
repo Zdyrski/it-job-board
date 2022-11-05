@@ -17,8 +17,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.mzdyrski.itjobboard.constants.SecurityConstants.EMPLOYER_URLS;
-import static com.mzdyrski.itjobboard.constants.SecurityConstants.PUBLIC_URLS;
+import static com.mzdyrski.itjobboard.constants.SecurityConstants.*;
+import static com.mzdyrski.itjobboard.enums.Role.ROLE_EMPLOYEE;
 
 @AllArgsConstructor
 @Configuration
@@ -63,6 +63,7 @@ public class SecurityConfiguration {
                 .and()
                 .authenticationManager(authManager)
                 .authorizeRequests().antMatchers(PUBLIC_URLS).permitAll()
+                .antMatchers(EMPLOYEE_URLS).hasAuthority("offer:apply")
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().accessDeniedHandler(jwtAccessDeniedHandler)

@@ -7,34 +7,17 @@ import { FlexColumnCenterContainer } from '../lib/Containers/Containers.styled';
 
 const OFFERS_URL = 'http://localhost:8080/offers';
 
-const initialData = {
-  offerId: '',
-  city: '',
-  companyLogoUrl: '',
-  companyName: '',
-  date: '',
-  remote: '',
-  salary: '',
-  tags: [],
-  title: '',
-};
-
 function Main() {
-  const [data, setData] = useState([initialData]);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     axios.post(OFFERS_URL).then((response) => {
       if (response.status === 200) {
         console.log(response);
         setData(response.data);
-        // sessionStorage.setItem('jwt-token', response.headers['jwt-token']);
-        // setSuccessAlert();
-        // setState(initialState);
-        // setTimeout(() => navigate('/'), 2000);
       }
     }).catch((error) => {
       console.log(error);
-      // setErrorAlert(error);
     });
   }, []);
 

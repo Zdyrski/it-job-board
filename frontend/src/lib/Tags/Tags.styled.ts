@@ -12,6 +12,8 @@ export const TagContainer = styled('div', {
 
 export const TagsContainer = styled('div', {
   display: 'flex',
+  justifyContent: 'flex-end',
+  alignItems: 'flex-end',
   flexFlow: 'row wrap',
   border: '2px solid $backgroundColor',
   borderRadius: '1.1rem',

@@ -3,6 +3,7 @@
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { IconButton, TextField } from '@mui/material';
 import axios from 'axios';
+import moment from 'moment';
 import React, { useState, useEffect } from 'react';
 import { getHeaders } from '../../constants';
 import GlitchedButton from '../Buttons/GlitchedButton/GlitchedButton';
@@ -55,10 +56,6 @@ function AccountSettings() {
     setPasswords({ ...passwords, [e.target.name]: e.target.value });
   };
 
-  const handleEmployeeChange = (e : React.ChangeEvent<HTMLInputElement>) => {
-    setEmployeeState({ ...employeeState, [e.target.name]: e.target.value });
-  };
-
   const handleEmployerChange = (e : React.ChangeEvent<HTMLInputElement>) => {
     setEmployerState({ ...employerState, [e.target.name]: e.target.value });
   };
@@ -90,14 +87,9 @@ function AccountSettings() {
     axios.post(ACCOUNT_URL, updatedData, { headers }).then((response) => {
       if (response.status === 200) {
         console.log(response);
-        // sessionStorage.setItem('jwt-token', response.headers['jwt-token']);
-        // setSuccessAlert();
-        // setState(initialState);
-        // setTimeout(() => navigate('/'), 2000);
       }
     }).catch((error) => {
       console.log(error);
-      // setErrorAlert(error);
     });
   };
 
@@ -133,7 +125,7 @@ function AccountSettings() {
       </DetailRowContainer>
       <DetailRowContainer>
         <div>Joined:</div>
-        <div>{userState.joinedDate}</div>
+        <div>{moment(new Date(userState.joinedDate)).format('MMMM Do YYYY')}</div>
       </DetailRowContainer>
     </SubContainer>
   );
@@ -143,11 +135,11 @@ function AccountSettings() {
       <Title>Account role details</Title>
       <DetailRowContainer>
         <div>First name:</div>
-        {editMode ? <StyledTextField name="firstName" value={employeeState.firstName} onChange={handleEmployeeChange} variant="standard" /> : <div>{employeeState.firstName}</div>}
+        <div>{employeeState.firstName}</div>
       </DetailRowContainer>
       <DetailRowContainer>
         <div>Last name:</div>
-        {editMode ? <StyledTextField name="lastName" value={employeeState.lastName} onChange={handleEmployeeChange} variant="standard" /> : <div>{employeeState.lastName}</div>}
+        <div>{employeeState.lastName}</div>
       </DetailRowContainer>
     </SubContainer>
   );
@@ -157,15 +149,15 @@ function AccountSettings() {
       <Title>Account role details</Title>
       <DetailRowContainer>
         <div>Company name:</div>
-        {editMode ? <StyledTextField name="companyName" value={employerState.companyName} onChange={handleEmployerChange} variant="standard" /> : <div>{employerState.companyName}</div>}
+        <div>{employerState.companyName}</div>
       </DetailRowContainer>
       <DetailRowContainer>
         <div>Company size:</div>
-        {editMode ? <StyledTextField name="companySize" value={employerState.companySize} onChange={handleEmployerChange} variant="standard" /> : <div>{employerState.companySize}</div>}
+        <div>{employerState.companySize}</div>
       </DetailRowContainer>
       <DetailRowContainer>
         <div>Company site:</div>
-        {editMode ? <StyledTextField name="companySiteUrl" value={employerState.companySiteUrl} onChange={handleEmployerChange} variant="standard" /> : <div>{employerState.companySiteUrl}</div>}
+        <div>{employerState.companySiteUrl}</div>
       </DetailRowContainer>
       <Title>Logo</Title>
       {editMode ? (
@@ -176,7 +168,7 @@ function AccountSettings() {
           variant="standard"
         />
       ) : (
-        <ListLogo name={employerState.companyName} logoSrc={employerState.companyLogoUrl} />
+        <ListLogo logoSrc={employerState.companyLogoUrl} />
       )}
     </SubContainer>
   );
@@ -235,7 +227,7 @@ function AccountSettings() {
         {userComponent}
         {userState.role === 'ROLE_EMPLOYEE' ? employeeComponent : employerComponent}
         <RowCenterContainer>
-          <GlitchedButton placeholder={editMode ? 'Cancel' : 'Edit'} onClick={handleEditButton} />
+          {userState.role === 'ROLE_EMPLOYER' && <GlitchedButton placeholder={editMode ? 'Cancel' : 'Edit'} onClick={handleEditButton} />}
           {editMode && <GlitchedButton placeholder="Save" onClick={handleSaveButton} />}
         </RowCenterContainer>
         {userState.role === 'ROLE_EMPLOYEE' && employeeCV}

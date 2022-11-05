@@ -1,3 +1,4 @@
+import { Autocomplete } from '@mui/material';
 import { styled } from '../stitches.config';
 
 export const MainContainer = styled('div', {
@@ -14,4 +15,11 @@ export const SkillAndRatingContainer = styled('div', {
   alignItems: 'center',
   justifyContent: 'space-between',
   width: '100%',
+});
+
+export const StyledAutocomplete = styled(Autocomplete, {
+  '.MuiAutocomplete-paper': {
+    backgroundColor: '$violetColor',
+    color: '$violetColor',
+  },
 });

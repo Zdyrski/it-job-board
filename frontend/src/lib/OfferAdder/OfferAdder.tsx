@@ -174,7 +174,7 @@ function OfferAdder() {
         </SubContainer>
         <SubContainer>
           <Title>
-            Type of contract * and salary(in PLN, undisclosed if left as 0)
+            Type of contract * and salary(PLN)
           </Title>
           <InputsContainer>
             <FormControlLabel

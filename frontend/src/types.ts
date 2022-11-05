@@ -1,6 +1,3 @@
-/* eslint-disable no-unused-vars */
-import { MouseEventHandler } from 'react';
-
 export interface OfferTaglineInterface {
     companyName: string
     location: string
@@ -15,7 +12,6 @@ export interface MoneyRangeInterface {
 }
 
 export interface CompanyInterface {
-    name: string
     logoSrc: string
 }
 
@@ -40,7 +36,7 @@ export interface SkillInterface {
     level: number
 }
 
-export interface contractInterface {
+export interface ContractInterface {
     name: string
     salaryUndisclosed: boolean
     minMoney: number
@@ -52,4 +48,28 @@ export interface AlertsComponentInterface {
     openSuccess: boolean
     errorMessage: string
     successMessage: string
+}
+
+export interface OfferDetailedInterface {
+    title: string
+    companyName: string
+    companySize: number
+    companyLogoUrl: string
+    companySiteUrl: string
+    experienceLevel: string
+    city: string
+    remote: string
+    contracts: ContractInterface[]
+    techStack: SkillInterface[]
+    description: string
+    date: string
+}
+
+export interface TechStackInterface {
+    techStack: SkillInterface[]
+    setTechStack: React.Dispatch<React.SetStateAction<any>>
+}
+
+export interface OfferDetailedMainInterface {
+    data: OfferDetailedInterface
 }

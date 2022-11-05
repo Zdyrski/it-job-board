@@ -3,26 +3,20 @@ import { styled } from '../stitches.config';
 export const ListContainer = styled('div', {
   display: 'flex',
   flexDirection: 'column',
-  justifyContent: 'start',
+  justifyContent: 'center',
   alignItems: 'center',
   width: '90%',
   height: '100%',
-  overflowY: 'scroll',
-  overflowX: 'hidden',
   backgroundColor: '$tertiaryColor',
-
-  // DISABLE SCROLLBAR
-  scrollbarWidth: 'none',
-  '&::-webkit-scrollbar': {
-    display: 'none',
-  },
 });
 
 export const MainContainer = styled('div', {
   display: 'flex',
-  justifyContent: 'space-around',
+  flexDirection: 'column',
+  justifyContent: 'center',
   alignItems: 'center',
   width: '95%',
+  height: '100%',
   backgroundColor: '$primaryColor',
   margin: '0.2rem',
 });

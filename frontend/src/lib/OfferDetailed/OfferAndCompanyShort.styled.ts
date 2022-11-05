@@ -28,3 +28,7 @@ export const DetailsContainer = styled('div', {
   padding: '0rem 2rem',
   border: '1px solid black',
 });
+
+export const Title = styled('div', {
+  fontSize: '2rem',
+});

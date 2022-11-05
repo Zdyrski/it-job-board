@@ -12,7 +12,7 @@ export const ListContainer = styled('div', {
     width: '80%',
   },
   '@lg': {
-    width: '50%',
+    width: '70%',
   },
   height: '100%',
   overflowY: 'scroll',
@@ -31,6 +31,7 @@ export const MainContainer = styled('div', {
   justifyContent: 'space-around',
   alignItems: 'center',
   width: '95%',
+  maxHeight: '7rem',
   backgroundColor: '$primaryColor',
   border: '0.2rem solid grey',
   borderRadius: '1rem',

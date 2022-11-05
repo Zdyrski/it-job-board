@@ -4,40 +4,15 @@ import {
 import {
   Autocomplete, IconButton, Rating,
 } from '@mui/material';
-import React, { useState } from 'react';
-import { SkillInterface } from '../../types';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { SkillInterface, TechStackInterface } from '../../types';
 import { StyledTextField } from '../Inputs/Inputs.styled';
 import { LevelDot } from '../OfferDetailed/TechStack.styled';
 import { SubContainer, Title, InputsContainer } from './OfferAdder.styled';
 import { MainContainer, SkillAndRatingContainer } from './TechStackAdder.styled';
 
-interface TechStackInterface {
-    techStack: SkillInterface[]
-    setTechStack: React.Dispatch<React.SetStateAction<any>>
-}
-const formats = [
-  'background',
-  'bold',
-  'color',
-  'font',
-  'code',
-  'italic',
-  // 'link',
-  'size',
-  'strike',
-  'script',
-  'underline',
-  'blockquote',
-  'header',
-  'indent',
-  'list',
-  'align',
-  'direction',
-  'code-block',
-  // 'formula',
-  // 'image'
-  // 'video'
-];
+const TAGS_URL = 'http://localhost:8080/offers/tags';
 
 const SKILL_LEVEL_MAP = new Map([
   [1, 'nice to have'],
@@ -53,21 +28,35 @@ function TechStackAdder({ techStack, setTechStack }: TechStackInterface) {
   // TODO call to tags api
   const [newSkillName, setNewSkillName] = useState<string | undefined>('');
   const [newSkillLvl, setNewSkillLvl] = useState<number | null>(initialSkillLvl);
+  const [options, setOptions] = useState<string[]>([]);
   const [hoverSkillLvl, setHoverSkillLvl] = useState(-1);
 
   const addNewSkill = () => {
-    if (techStack.find(({ skillName }) => skillName === newSkillName)) {
+    if (techStack.find(({ skillName }) => skillName === newSkillName) || newSkillName === '') {
       return;
     }
     const updatedTechStack = [...techStack, { skillName: newSkillName, level: newSkillLvl }];
     setTechStack(updatedTechStack);
+    setOptions(options.filter((option) => option !== newSkillName));
     setNewSkillName('');
   };
 
   const deleteSkill = (skillName : string) => {
     const updatedTechStack = techStack.filter((skill) => skill.skillName !== skillName);
     setTechStack(updatedTechStack);
+    setOptions([...options, skillName]);
   };
+
+  useEffect(() => {
+    axios.get(TAGS_URL).then((response) => {
+      if (response.status === 200) {
+        console.log(response);
+        setOptions(response.data);
+      }
+    }).catch((error) => {
+      console.log(error);
+    });
+  }, []);
 
   return (
     <SubContainer>
@@ -93,15 +82,14 @@ function TechStackAdder({ techStack, setTechStack }: TechStackInterface) {
           freeSolo
           value={newSkillName}
           disableClearable
-          options={formats}
-          onChange={(_event: any, newValue: string | undefined) => {
-            setNewSkillName(newValue);
-          }}
+          options={options}
+          onChange={(_e, newValue) => setNewSkillName(newValue)}
           renderInput={(params) => (
             <StyledTextField
                 // eslint-disable-next-line react/jsx-props-no-spreading
               {...params}
               label="Search input"
+              variant="standard"
               InputProps={{
                 ...params.InputProps,
                 type: 'search',

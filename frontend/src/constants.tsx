@@ -14,7 +14,9 @@ export const getHeaders = () => {
   const token = sessionStorage.getItem('jwt-token');
   const result = {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`,
   };
+  if (sessionStorage.getItem('jwt-token') !== null) {
+    (result as any).Authorization = `Bearer ${token}`;
+  }
   return result;
 };

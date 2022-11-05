@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import moment from 'moment';
 import ListLogo from '../CompanyLogo/ListLogo';
 import OfferTagline from '../OfferTagline/OfferTagline';
 import {
@@ -23,11 +24,11 @@ function Offer({
 
   return (
     <MainContainer onClick={() => navigate(`/offers/${offerId}`)}>
-      <ListLogo name={companyName} logoSrc={companyLogoUrl} />
+      <ListLogo logoSrc={companyLogoUrl} />
       <OfferDetails>
         <FirstRow>
           <Name>{title}</Name>
-          <DateTag>7d ago</DateTag>
+          <DateTag>{moment(new Date(date)).fromNow()}</DateTag>
         </FirstRow>
         <SecondRow>
           {salary}

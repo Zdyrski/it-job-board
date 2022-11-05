@@ -13,3 +13,17 @@ export const Logo = styled('div', {
   color: '$secondaryColor',
   fontSize: '$text2',
 });
+
+export const Icon = styled('div', {
+  justifyContent: 'center',
+  alignItems: 'center',
+  fontSize: '1rem',
+});
+
+export const IconAndText = styled('div', {
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  fontSize: '0.7rem',
+});

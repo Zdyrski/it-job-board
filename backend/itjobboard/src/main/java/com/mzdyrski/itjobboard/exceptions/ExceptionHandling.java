@@ -53,10 +53,11 @@ public class ExceptionHandling implements ErrorController {
         return createHttpResponse(UNAUTHORIZED, e.getMessage());
     }
 
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<HttpResponse> internalServerErrorException(Exception e) {
-        return createHttpResponse(INTERNAL_SERVER_ERROR, e.getMessage());
-    }
+//    TODO uncomment
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<HttpResponse> internalServerErrorException(Exception e) {
+//        return createHttpResponse(INTERNAL_SERVER_ERROR, e.getMessage());
+//    }
 
     private ResponseEntity<HttpResponse> createHttpResponse(HttpStatus httpStatus, String message) {
         return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus, httpStatus.getReasonPhrase().toUpperCase(), message.toUpperCase()), httpStatus);

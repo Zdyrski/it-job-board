@@ -23,7 +23,9 @@ function LocationAndRemoteTags({ location, remote } : Props) {
       </SubContainer>
       {remote && (
       <RemoteTag>
-        Remote
+        {remote}
+        {' '}
+        remote
       </RemoteTag>
       )}
     </CompanyTags>
