@@ -1,6 +1,33 @@
+import InfiniteScroll from 'react-infinite-scroller';
 import { styled } from '../stitches.config';
 
 export const ListContainer = styled('div', {
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'start',
+  alignItems: 'center',
+  '@xs': {
+    width: '95%',
+  },
+  '@md': {
+    width: '80%',
+  },
+  '@lg': {
+    width: '70%',
+  },
+  height: '100%',
+  overflowY: 'scroll',
+  overflowX: 'hidden',
+  backgroundColor: '$tertiaryColor',
+
+  // DISABLE SCROLLBAR
+  scrollbarWidth: 'none',
+  '&::-webkit-scrollbar': {
+    display: 'none',
+  },
+});
+
+export const StyledInfinityScroll = styled(InfiniteScroll, {
   display: 'flex',
   flexDirection: 'column',
   justifyContent: 'start',

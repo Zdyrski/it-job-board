@@ -28,7 +28,7 @@ export interface OfferInterface {
 }
 
 export interface OffersListInterface {
-    data: OfferInterface[]
+    link: string
 }
 
 export interface SkillInterface {

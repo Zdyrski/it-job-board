@@ -3,6 +3,9 @@ package com.mzdyrski.itjobboard.service;
 import com.mzdyrski.itjobboard.dataTemplates.*;
 import com.mzdyrski.itjobboard.domain.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -12,6 +15,8 @@ import java.util.*;
 import static com.mzdyrski.itjobboard.constants.EmailConstant.*;
 import static com.mzdyrski.itjobboard.enums.Role.ROLE_EMPLOYEE;
 import static com.mzdyrski.itjobboard.enums.Role.ROLE_EMPLOYER;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
 
 @RequiredArgsConstructor
 @Service
@@ -23,6 +28,7 @@ public class OfferServiceImpl {
     final private TagRepository tagRepository;
     final private EmployeesCvRepository cvRepository;
     final private EmailService emailService;
+    final private MongoTemplate mongoTemplate;
 
     public OfferDetailedData getOfferDetails(String offerId) {
         var offer = offerRepository.findById(offerId).get();
@@ -53,6 +59,16 @@ public class OfferServiceImpl {
             result.add(getListElForGivenOffer(offer));
         }
         return result;
+    }
+
+    public List<ListElOfferData> getOffersByFilters2(Aggregation aggregation) {
+        // TODO applying possible filters and connect with employer img src
+        var offers = mongoTemplate.aggregate(aggregation, "offers" , Offer.class);
+        var result2 = new ArrayList<ListElOfferData>();
+        for (Offer offer : offers) {
+            result2.add(getListElForGivenOffer(offer));
+        }
+        return result2;
     }
 
     public List<ListElOfferData> getOffersByUser(User user) {
