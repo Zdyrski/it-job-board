@@ -29,6 +29,7 @@ export interface OfferInterface {
 
 export interface OffersListInterface {
     link: string
+    params?: URLSearchParams
 }
 
 export interface SkillInterface {
@@ -72,4 +73,10 @@ export interface TechStackInterface {
 
 export interface OfferDetailedMainInterface {
     data: OfferDetailedInterface
+}
+
+export interface ProtectedRouteInterface {
+    role?: string
+    authority: string
+    children: React.ReactNode
 }

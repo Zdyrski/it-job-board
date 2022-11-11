@@ -9,6 +9,7 @@ import UserOffers from './routes/UserOffers';
 import SignIn from './routes/SignIn';
 import SignUp from './routes/SignUp';
 import Test from './routes/Test';
+import ProtectedRoutes from './routes/ProtectedRoutes';
 
 function App() {
   globalStyles();
@@ -16,14 +17,22 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Main />} />
-        <Route path="/sign-in" element={<SignIn />} />
-        <Route path="/sign-up" element={<SignUp />} />
         <Route path="/offers/:id" element={<Offer />} />
-        <Route path="/my-offers" element={<UserOffers />} />
-        <Route path="/add-offer" element={<AddOffer />} />
-        <Route path="/account" element={<Account />} />
+        <Route element={<ProtectedRoutes logged={false} authority="user:read" />}>
+          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/sign-up" element={<SignUp />} />
+        </Route>
+        <Route element={<ProtectedRoutes authority="user:read" />}>
+          <Route path="/account" element={<Account />} />
+        </Route>
+        <Route element={<ProtectedRoutes authority="offer:create" />}>
+          <Route path="/add-offer" element={<AddOffer />} />
+        </Route>
+        <Route element={<ProtectedRoutes authority="offer:read" />}>
+          <Route path="/my-offers" element={<UserOffers />} />
+        </Route>
         <Route path="/test" element={<Test />} />
-        <Route path="/*" element={<Test />} />
+        <Route path="/*" element={<div />} />
       </Routes>
     </BrowserRouter>
 

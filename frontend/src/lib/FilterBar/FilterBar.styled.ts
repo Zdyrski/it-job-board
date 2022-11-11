@@ -26,4 +26,5 @@ export const IconAndText = styled('div', {
   justifyContent: 'center',
   alignItems: 'center',
   fontSize: '0.7rem',
+  cursor: 'pointer',
 });

@@ -7,7 +7,7 @@ import axios from 'axios';
 import { useSearchParams } from 'react-router-dom';
 import GlitchedButton from '../Buttons/GlitchedButton/GlitchedButton';
 import { StyledTextField } from '../Inputs/Inputs.styled';
-import { StyledDrawer } from './FilterDrawer.styled';
+import { StyledDrawer, FilterSection } from './FilterDrawer.styled';
 
 const TAGS_URL = 'http://localhost:8080/offers/tags';
 
@@ -69,7 +69,7 @@ function FilterDrawer({ open, handleOpen } : FilterDrawerInterface) {
 
   const handleClear = () => {
     setKeywords(initialKeywords);
-    setCheckboxes({ ...initialCheckboxes });
+    setCheckboxes(initialCheckboxes);
     setSkills([]);
   };
 
@@ -117,7 +117,7 @@ function FilterDrawer({ open, handleOpen } : FilterDrawerInterface) {
   useEffect(() => {
     axios.get(TAGS_URL).then((response) => {
       if (response.status === 200) {
-        console.log(response);
+        // console.log(response);
         setOptions(response.data);
       }
     }).catch((error) => {
@@ -129,7 +129,6 @@ function FilterDrawer({ open, handleOpen } : FilterDrawerInterface) {
     <StyledDrawer anchor="left" open={open} onClose={handleOpen}>
       <StyledTextField name="title" autoComplete="off" value={keywords.title} label="Title keyword" variant="standard" onChange={handleFiltersChange} />
       <StyledTextField name="city" autoComplete="off" value={keywords.city} label="City" variant="standard" onChange={handleFiltersChange} />
-      <Divider />
       <Autocomplete
         multiple
         value={skills}
@@ -146,22 +145,22 @@ function FilterDrawer({ open, handleOpen } : FilterDrawerInterface) {
           />
         )}
       />
-      <Divider />
-      <FormControlLabel control={<Checkbox name="remote.no" value={checkboxes.remote.no} onChange={handleCheckboxes} />} label="No remote" />
-      <FormControlLabel control={<Checkbox name="remote.partial" value={checkboxes.remote.partial} onChange={handleCheckboxes} />} label="Partially remote" />
-      <FormControlLabel control={<Checkbox name="remote.fullTime" value={checkboxes.remote.fullTime} onChange={handleCheckboxes} />} label="Full time remote" />
-      <Divider />
-      <FormControlLabel control={<Checkbox name="contract.employment" value={checkboxes.contract.employment} onChange={handleCheckboxes} />} label="Contract of employment" />
-      <FormControlLabel control={<Checkbox name="contract.mandate" value={checkboxes.contract.mandate} onChange={handleCheckboxes} />} label="Contract of mandate" />
-      <FormControlLabel control={<Checkbox name="contract.B2B" value={checkboxes.contract.B2B} onChange={handleCheckboxes} />} label="B2B" />
-      <FormControlLabel control={<Checkbox name="contract.other" value={checkboxes.contract.other} onChange={handleCheckboxes} />} label="Other" />
-      <Divider />
-      <FormControlLabel control={<Checkbox name="expLevel.intern" value={checkboxes.expLevel.intern} onChange={handleCheckboxes} />} label="Intern" />
-      <FormControlLabel control={<Checkbox name="expLevel.junior" value={checkboxes.expLevel.junior} onChange={handleCheckboxes} />} label="Junior" />
-      <FormControlLabel control={<Checkbox name="expLevel.medium" value={checkboxes.expLevel.medium} onChange={handleCheckboxes} />} label="Medium" />
-      <FormControlLabel control={<Checkbox name="expLevel.senior" value={checkboxes.expLevel.senior} onChange={handleCheckboxes} />} label="Senior" />
-      <FormControlLabel control={<Checkbox name="expLevel.expert" value={checkboxes.expLevel.expert} onChange={handleCheckboxes} />} label="Expert" />
-      <Button type="button" onClick={() => handleClear}>Clear All</Button>
+      <FilterSection>Remote work</FilterSection>
+      <FormControlLabel control={<Checkbox name="remote.no" checked={checkboxes.remote.no} onChange={handleCheckboxes} />} label="No remote" />
+      <FormControlLabel control={<Checkbox name="remote.partial" checked={checkboxes.remote.partial} onChange={handleCheckboxes} />} label="Partially remote" />
+      <FormControlLabel control={<Checkbox name="remote.fullTime" checked={checkboxes.remote.fullTime} onChange={handleCheckboxes} />} label="Full time remote" />
+      <FilterSection>Contract type</FilterSection>
+      <FormControlLabel control={<Checkbox name="contract.employment" checked={checkboxes.contract.employment} onChange={handleCheckboxes} />} label="Contract of employment" />
+      <FormControlLabel control={<Checkbox name="contract.mandate" checked={checkboxes.contract.mandate} onChange={handleCheckboxes} />} label="Contract of mandate" />
+      <FormControlLabel control={<Checkbox name="contract.B2B" checked={checkboxes.contract.B2B} onChange={handleCheckboxes} />} label="B2B" />
+      <FormControlLabel control={<Checkbox name="contract.other" checked={checkboxes.contract.other} onChange={handleCheckboxes} />} label="Other" />
+      <FilterSection>Experience level</FilterSection>
+      <FormControlLabel control={<Checkbox name="expLevel.intern" checked={checkboxes.expLevel.intern} onChange={handleCheckboxes} />} label="Intern" />
+      <FormControlLabel control={<Checkbox name="expLevel.junior" checked={checkboxes.expLevel.junior} onChange={handleCheckboxes} />} label="Junior" />
+      <FormControlLabel control={<Checkbox name="expLevel.medium" checked={checkboxes.expLevel.medium} onChange={handleCheckboxes} />} label="Medium" />
+      <FormControlLabel control={<Checkbox name="expLevel.senior" checked={checkboxes.expLevel.senior} onChange={handleCheckboxes} />} label="Senior" />
+      <FormControlLabel control={<Checkbox name="expLevel.expert" checked={checkboxes.expLevel.expert} onChange={handleCheckboxes} />} label="Expert" />
+      <Button type="button" onClick={handleClear}>Clear All</Button>
       <GlitchedButton placeholder="Filter" onClick={handleFilter} />
     </StyledDrawer>
   );

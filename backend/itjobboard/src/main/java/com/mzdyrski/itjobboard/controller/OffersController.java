@@ -41,7 +41,9 @@ public class OffersController {
                                                                  @RequestParam(value = "skill") Optional<String[]> skills,
                                                                  @RequestParam Optional<String[]> remote,
                                                                  @RequestParam Optional<String[]> contract,
-                                                                 @RequestParam Optional<String[]> expLevel) {
+                                                                 @RequestParam Optional<String[]> expLevel,
+                                                                 @RequestParam Optional<Long> page,
+                                                                 @RequestParam Optional<Long> limit) {
         var skip0 = skip(0L);
         var titleAgg = title.isPresent() ? match(new Criteria("title").regex(title.orElse(""))) : skip0;
         var cityAgg = city.isPresent() ? match(new Criteria("address.city").regex(city.orElse(""))) : skip0;
@@ -49,6 +51,8 @@ public class OffersController {
         var remoteAgg = remote.isPresent() ? match(new Criteria("remote").in(remote.get())) : skip0;
         var contractAgg = contract.isPresent() ? match(new Criteria("contracts.name").in(contract.get())) : skip0;
         var expLevelAgg = expLevel.isPresent() ? match(new Criteria("experienceLevel").in(expLevel.get())) : skip0;
+        var skipAgg = (page.isPresent() && limit.isPresent()) ? skip(page.get() * limit.get()) : skip0;
+        var limitAgg = limit.isPresent() ? Aggregation.limit(limit.get()) : skip0;
 
         var sortCriteria = Aggregation.sort(Sort.Direction.DESC, "date");
 
@@ -59,7 +63,9 @@ public class OffersController {
                 remoteAgg,
                 contractAgg,
                 expLevelAgg,
-                sortCriteria
+                sortCriteria,
+                skipAgg,
+                limitAgg
         );
         var offersList = offerService.getOffersByFilters2(aggregation);
         return Mono.just(new ResponseEntity<>(offersList, OK));

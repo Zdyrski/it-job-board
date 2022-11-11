@@ -35,6 +35,7 @@ public class JWTTokenProvider {
         return JWT.create()
                 .withIssuer(PORTAL_NAME)
                 .withIssuedAt(new Date())
+                .withClaim("role", "EMPLOYEE")
                 .withSubject(userSecurity.getUsername())
                 .withArrayClaim(AUTHORITIES, claims)
                 .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRATION_TIME))

@@ -2,28 +2,29 @@ import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { getHeaders } from '../../constants';
-import { OffersListInterface, OfferInterface } from '../../types';
+import { OfferInterface } from '../../types';
 import Offer from './Offer';
 import { StyledInfinityScroll } from './Offer.styled';
 
-function OfferList({ link } : OffersListInterface) {
+const ADMIN_OFFERS_URL = '';
+
+function AdminOfferList() {
   const [data, setData] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [searchParams] = useSearchParams();
 
   const fetchData = () => {
-    // TODO make pagination work
+    console.log(ADMIN_OFFERS_URL);
+
     const headers = getHeaders();
     const config = {
       headers,
       params: searchParams,
     };
-
-    axios.get(link, config).then((response) => {
+    axios.get(ADMIN_OFFERS_URL, config).then((response) => {
       if (response.status === 200) {
         console.log(response);
-        const offers:never[] = response.data;
-        setData([...data, ...offers]);
+        setData(response.data);
         setHasMore(false);
       }
     }).catch((error) => {
@@ -31,7 +32,7 @@ function OfferList({ link } : OffersListInterface) {
     });
   };
 
-  useEffect(() => { // for rerendering when URL query changed
+  useEffect(() => {
     setData([]);
     setHasMore(true);
   }, [searchParams]);
@@ -59,4 +60,4 @@ function OfferList({ link } : OffersListInterface) {
   );
 }
 
-export default OfferList;
+export default AdminOfferList;

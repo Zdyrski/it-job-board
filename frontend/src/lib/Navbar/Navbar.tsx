@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { useNavigate } from 'react-router-dom';
 import { MainContainer, MainRow, Logo } from './Navbar.styled';
 import { ColorModeToggleButton } from '../Buttons/ThemeButton/ColorModeToggleButton';

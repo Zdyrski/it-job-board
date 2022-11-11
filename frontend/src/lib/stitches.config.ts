@@ -104,4 +104,7 @@ export const globalStyles = globalCss({
       fontSize: '16px',
     },
   },
+  '.MuiAutocomplete-listbox': {
+    backgroundColor: '$primaryColor',
+  },
 });
