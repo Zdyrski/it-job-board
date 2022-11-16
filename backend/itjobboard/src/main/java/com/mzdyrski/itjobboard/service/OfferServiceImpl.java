@@ -5,7 +5,6 @@ import com.mzdyrski.itjobboard.domain.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
 
 import javax.mail.MessagingException;
@@ -13,10 +12,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static com.mzdyrski.itjobboard.constants.EmailConstant.*;
-import static com.mzdyrski.itjobboard.enums.Role.ROLE_EMPLOYEE;
-import static com.mzdyrski.itjobboard.enums.Role.ROLE_EMPLOYER;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
+import static com.mzdyrski.itjobboard.enums.Role.*;
 
 @RequiredArgsConstructor
 @Service
@@ -51,9 +47,9 @@ public class OfferServiceImpl {
         );
     }
 
-    public List<ListElOfferData> getOffersByFilters() {
+    public List<ListElOfferData> getOffersByFilters(Aggregation aggregation) {
         // TODO applying possible filters and connect with employer img src
-        var offers = offerRepository.findAllByOrderByDateDesc();
+        var offers = mongoTemplate.aggregate(aggregation, "offers", Offer.class);
         var result = new ArrayList<ListElOfferData>();
         for (Offer offer : offers) {
             result.add(getListElForGivenOffer(offer));
@@ -61,14 +57,14 @@ public class OfferServiceImpl {
         return result;
     }
 
-    public List<ListElOfferData> getOffersByFilters2(Aggregation aggregation) {
+    public List<ListAdminElOfferData> getOffersByAdminFilters(Aggregation aggregation) {
         // TODO applying possible filters and connect with employer img src
-        var offers = mongoTemplate.aggregate(aggregation, "offers" , Offer.class);
-        var result2 = new ArrayList<ListElOfferData>();
+        var offers = mongoTemplate.aggregate(aggregation, "offers", Offer.class);
+        var result = new ArrayList<ListAdminElOfferData>();
         for (Offer offer : offers) {
-            result2.add(getListElForGivenOffer(offer));
+            result.add(getListAdminElForGivenOffer(offer));
         }
-        return result2;
+        return result;
     }
 
     public List<ListElOfferData> getOffersByUser(User user) {
@@ -105,7 +101,7 @@ public class OfferServiceImpl {
         newOffer.setTags(getTags(reverseSortedTechStack));
         newOffer.setDate(new Date());
         newOffer.setDescription(offerData.description());
-        newOffer.setApproved(false);
+        newOffer.setApprovalStatus(0);
         offerRepository.save(newOffer);
         emailService.sendEmail(employer.getEmail(), EMAIL_TYPE_OFFER_ADDED, "TEST", null);
     }
@@ -148,6 +144,16 @@ public class OfferServiceImpl {
         tagRepository.save(newTag);
     }
 
+    public void setOfferStatus(User admin, String offerId, OfferStatusData data) {
+        if (!Objects.equals(admin.getRole(), ROLE_ADMIN.name())) {
+            return;
+        }
+        var offer = offerRepository.findById(offerId).orElseThrow();
+        offer.setApprovalStatus(data.approvalState());
+        offer.setArchived(data.archived());
+        offerRepository.save(offer);
+    }
+
     private ListElOfferData getListElForGivenOffer(Offer offer) {
         var employerInfo = (Employer) userRepository.findById(offer.getEmployerId()).get();
         return new ListElOfferData(
@@ -160,6 +166,23 @@ public class OfferServiceImpl {
                 offer.getTags(),
                 offer.getSalaryShort(),
                 offer.getDate()
+        );
+    }
+
+    private ListAdminElOfferData getListAdminElForGivenOffer(Offer offer) {
+        var employerInfo = (Employer) userRepository.findById(offer.getEmployerId()).get();
+        return new ListAdminElOfferData(
+                offer.getId(),
+                offer.getTitle(),
+                employerInfo.getCompanyName(),
+                employerInfo.getCompanyLogoUrl(),
+                offer.getAddress().city(),
+                offer.getRemote(),
+                offer.getTags(),
+                offer.getSalaryShort(),
+                offer.getDate(),
+                offer.getApprovalStatus(),
+                offer.isArchived()
         );
     }
 

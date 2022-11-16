@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
@@ -8,15 +9,20 @@ import { StyledInfinityScroll } from './Offer.styled';
 
 function OfferList({ link } : OffersListInterface) {
   const [data, setData] = useState([]);
-  const [hasMore, setHasMore] = useState(true);
+  const [page, setPage] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
   const [searchParams] = useSearchParams();
 
   const fetchData = () => {
     // TODO make pagination work
     const headers = getHeaders();
+    const params = new URLSearchParams(window.location.search);
+    params.append('page', page.toString());
+    params.append('limit', '10');
+
     const config = {
       headers,
-      params: searchParams,
+      params,
     };
 
     axios.get(link, config).then((response) => {
@@ -24,7 +30,12 @@ function OfferList({ link } : OffersListInterface) {
         console.log(response);
         const offers:never[] = response.data;
         setData([...data, ...offers]);
-        setHasMore(false);
+        if (offers.length < 10) {
+          setHasMore(false);
+        } else {
+          setPage((prev) => prev + 1);
+          setHasMore(true);
+        }
       }
     }).catch((error) => {
       console.log(error);
@@ -33,6 +44,7 @@ function OfferList({ link } : OffersListInterface) {
 
   useEffect(() => { // for rerendering when URL query changed
     setData([]);
+    setPage(0);
     setHasMore(true);
   }, [searchParams]);
 

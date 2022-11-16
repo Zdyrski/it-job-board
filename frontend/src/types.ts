@@ -27,6 +27,11 @@ export interface OfferInterface {
     title: string
 }
 
+export interface AdminOfferInterface extends OfferInterface {
+    approvalStatus: number
+    archived: boolean
+}
+
 export interface OffersListInterface {
     link: string
     params?: URLSearchParams
@@ -79,4 +84,18 @@ export interface ProtectedRouteInterface {
     role?: string
     authority: string
     children: React.ReactNode
+}
+
+export interface AdminUserInterface {
+    id: string
+    email: string
+    role: string
+    joinedDate: string
+    locked: boolean
+    active: boolean
+}
+
+export interface FilterDrawerInterface {
+    open: boolean
+    handleOpen: React.Dispatch<React.SetStateAction<boolean>>
 }

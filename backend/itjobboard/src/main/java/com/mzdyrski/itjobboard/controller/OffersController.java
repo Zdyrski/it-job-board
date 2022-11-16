@@ -1,9 +1,6 @@
 package com.mzdyrski.itjobboard.controller;
 
-import com.mzdyrski.itjobboard.dataTemplates.ListElOfferData;
-import com.mzdyrski.itjobboard.dataTemplates.OfferData;
-import com.mzdyrski.itjobboard.dataTemplates.OfferDetailedData;
-import com.mzdyrski.itjobboard.dataTemplates.TagData;
+import com.mzdyrski.itjobboard.dataTemplates.*;
 import com.mzdyrski.itjobboard.domain.Employee;
 import com.mzdyrski.itjobboard.service.OfferServiceImpl;
 import com.mzdyrski.itjobboard.service.UserServiceImpl;
@@ -52,11 +49,13 @@ public class OffersController {
         var contractAgg = contract.isPresent() ? match(new Criteria("contracts.name").in(contract.get())) : skip0;
         var expLevelAgg = expLevel.isPresent() ? match(new Criteria("experienceLevel").in(expLevel.get())) : skip0;
         var skipAgg = (page.isPresent() && limit.isPresent()) ? skip(page.get() * limit.get()) : skip0;
-        var limitAgg = limit.isPresent() ? Aggregation.limit(limit.get()) : skip0;
+        var limitAgg = limit.isPresent() ? limit(limit.get()) : skip0;
+        var approvedAgg = match(new Criteria("approved").is(true));
 
-        var sortCriteria = Aggregation.sort(Sort.Direction.DESC, "date");
+        var sortCriteria = sort(Sort.Direction.DESC, "date");
 
         var aggregation = newAggregation(
+                approvedAgg,
                 titleAgg,
                 cityAgg,
                 skillsAgg,
@@ -67,9 +66,11 @@ public class OffersController {
                 skipAgg,
                 limitAgg
         );
-        var offersList = offerService.getOffersByFilters2(aggregation);
+        var offersList = offerService.getOffersByFilters(aggregation);
         return Mono.just(new ResponseEntity<>(offersList, OK));
     }
+
+
 
     @GetMapping("/{id}")
     public Mono<ResponseEntity<OfferDetailedData>> getOffer(@PathVariable String id) {
@@ -99,9 +100,9 @@ public class OffersController {
     }
 
     @PostMapping("/add-offer")
-    public Mono<ResponseEntity> addOffer(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @RequestBody OfferData offerData) throws MessagingException, IOException {
+    public Mono<ResponseEntity> addOffer(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @RequestBody OfferData data) throws MessagingException, IOException {
         var employer = userService.getUserFromTokenHeader(authorizationHeader);
-        offerService.addOffer(employer, offerData);
+        offerService.addOffer(employer, data);
         return Mono.just(new ResponseEntity<>(OK));
     }
 
@@ -115,5 +116,49 @@ public class OffersController {
     public Mono<ResponseEntity> addTag(@RequestBody TagData data) {
         offerService.addTag(data);
         return Mono.just(new ResponseEntity<>(data, OK));
+    }
+
+    @GetMapping("/admin")
+    public Mono<ResponseEntity<List<ListAdminElOfferData>>> getAdminOffers(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
+                                                                      @RequestParam Optional<String> title,
+                                                                      @RequestParam Optional<String> city,
+                                                                      @RequestParam(value = "skill") Optional<String[]> skills,
+                                                                      @RequestParam Optional<String[]> remote,
+                                                                      @RequestParam Optional<String[]> contract,
+                                                                      @RequestParam Optional<String[]> expLevel,
+                                                                      @RequestParam Optional<Long> page,
+                                                                      @RequestParam Optional<Long> limit) {
+        var skip0 = skip(0L);
+        var titleAgg = title.isPresent() ? match(new Criteria("title").regex(title.orElse(""))) : skip0;
+        var cityAgg = city.isPresent() ? match(new Criteria("address.city").regex(city.orElse(""))) : skip0;
+        var skillsAgg = skills.isPresent() ? match(new Criteria("techStack.skillName").all(skills.get())) : skip0;
+        var remoteAgg = remote.isPresent() ? match(new Criteria("remote").in(remote.get())) : skip0;
+        var contractAgg = contract.isPresent() ? match(new Criteria("contracts.name").in(contract.get())) : skip0;
+        var expLevelAgg = expLevel.isPresent() ? match(new Criteria("experienceLevel").in(expLevel.get())) : skip0;
+        var skipAgg = (page.isPresent() && limit.isPresent()) ? skip(page.get() * limit.get()) : skip0;
+        var limitAgg = limit.isPresent() ? limit(limit.get()) : skip0;
+
+        var sortCriteria = sort(Sort.Direction.DESC, "date");
+
+        var aggregation = newAggregation(
+                titleAgg,
+                cityAgg,
+                skillsAgg,
+                remoteAgg,
+                contractAgg,
+                expLevelAgg,
+                sortCriteria,
+                skipAgg,
+                limitAgg
+        );
+        var offersList = offerService.getOffersByAdminFilters(aggregation);
+        return Mono.just(new ResponseEntity<>(offersList, OK));
+    }
+
+    @PostMapping("/admin/{id}")
+    public Mono<ResponseEntity> approveOffer(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @PathVariable String id, @RequestBody OfferStatusData data) {
+        var admin = userService.getUserFromTokenHeader(authorizationHeader);
+        offerService.setOfferStatus(admin, id, data);
+        return Mono.just(new ResponseEntity<>(OK));
     }
 }

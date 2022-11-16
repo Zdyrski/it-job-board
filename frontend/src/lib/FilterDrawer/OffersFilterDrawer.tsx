@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 import {
-  Checkbox, Divider, FormControlLabel, Autocomplete, Button,
+  Checkbox, FormControlLabel, Autocomplete, Button,
 } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
@@ -8,13 +8,9 @@ import { useSearchParams } from 'react-router-dom';
 import GlitchedButton from '../Buttons/GlitchedButton/GlitchedButton';
 import { StyledTextField } from '../Inputs/Inputs.styled';
 import { StyledDrawer, FilterSection } from './FilterDrawer.styled';
+import { FilterDrawerInterface } from '../../types';
 
 const TAGS_URL = 'http://localhost:8080/offers/tags';
-
-interface FilterDrawerInterface {
-  open: boolean
-  handleOpen: React.Dispatch<React.SetStateAction<boolean>>
-}
 
 const initialKeywords = {
   title: '',
@@ -42,7 +38,7 @@ const initialCheckboxes = {
   },
 };
 
-function FilterDrawer({ open, handleOpen } : FilterDrawerInterface) {
+function OffersFilterDrawer({ open, handleOpen } : FilterDrawerInterface) {
   const [keywords, setKeywords] = useState(initialKeywords);
   const [checkboxes, setCheckboxes] = useState(initialCheckboxes);
   const [skills, setSkills] = useState<string[]>([]);
@@ -74,8 +70,6 @@ function FilterDrawer({ open, handleOpen } : FilterDrawerInterface) {
   };
 
   const handleFilter = () => {
-    // TODO add filters to URL string and navigate there
-
     searchParams.delete('title');
     searchParams.delete('city');
     if (keywords.title !== '') {
@@ -102,16 +96,7 @@ function FilterDrawer({ open, handleOpen } : FilterDrawerInterface) {
         }
       });
     });
-
-    // TODO navigate to main with params
     setSearchParams(searchParams);
-
-    // console.log(searchParams.getAll);
-    // console.log(keywords);
-    // console.log(skills);
-    // console.log(checkboxes);
-    // console.log(searchParams);
-    // console.log('filter');
   };
 
   useEffect(() => {
@@ -166,4 +151,4 @@ function FilterDrawer({ open, handleOpen } : FilterDrawerInterface) {
   );
 }
 
-export default FilterDrawer;
+export default OffersFilterDrawer;

@@ -107,4 +107,7 @@ export const globalStyles = globalCss({
   '.MuiAutocomplete-listbox': {
     backgroundColor: '$primaryColor',
   },
+  '.MuiToolbar-root': {
+    backgroundColor: '$primaryColor',
+  },
 });

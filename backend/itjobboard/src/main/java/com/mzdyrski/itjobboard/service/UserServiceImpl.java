@@ -1,5 +1,6 @@
 package com.mzdyrski.itjobboard.service;
 
+import com.mzdyrski.itjobboard.dataTemplates.UserStatusData;
 import com.mzdyrski.itjobboard.dataTemplates.UserUpdateData;
 import com.mzdyrski.itjobboard.domain.*;
 import com.mzdyrski.itjobboard.enums.Role;
@@ -11,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.Binary;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -20,11 +23,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 import static com.mzdyrski.itjobboard.constants.SecurityConstants.TOKEN_HEADER;
-import static com.mzdyrski.itjobboard.enums.Role.ROLE_EMPLOYEE;
-import static com.mzdyrski.itjobboard.enums.Role.ROLE_EMPLOYER;
+import static com.mzdyrski.itjobboard.enums.Role.*;
 
 @RequiredArgsConstructor
 @Service
@@ -35,6 +38,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final LoginAttemptService loginAttemptService;
     private final JWTTokenProvider jwtTokenProvider;
+    private final MongoTemplate mongoTemplate;
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -48,8 +52,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     private void validateLoginAttempt(User user) {
-        if (user.isNotLocked()) {
-            user.setNotLocked(!loginAttemptService.hasExceededMaxAttempts(user.getEmail()));
+        if (user.isLocked()) {
+            user.setLocked(!loginAttemptService.hasExceededMaxAttempts(user.getEmail()));
         } else {
             loginAttemptService.evictUserFromCache(user.getEmail());
         }
@@ -65,7 +69,7 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         user.setAuthorities(Role.valueOf(role).getAuthorities());
         user.setActive(true);
         user.setJoinedDate(new Date());
-        user.setNotLocked(true);
+        user.setLocked(true);
         userRepository.save(user);
         return null;
     }
@@ -129,10 +133,22 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         cvRepository.save(cv);
     }
 
+    public List<User> getUsersByFilters(Aggregation aggregation){
+        return mongoTemplate.aggregate(aggregation, "users", User.class).getMappedResults();
+    }
+
+    public void updateUserStatus(String userId, UserStatusData data){
+        var user = userRepository.findById(userId).orElseThrow();
+        user.setLocked(data.locked());
+        user.setActive(data.active());
+        userRepository.save(user);
+    }
+
     private User getUserClass(String role) throws BadRequestDataException {
         return switch (role) {
             case "ROLE_EMPLOYEE" -> new Employee();
             case "ROLE_EMPLOYER" -> new Employer();
+            case "ROLE_ADMIN" -> new User();
             default -> throw new BadRequestDataException("Unsupported role");
         };
     }

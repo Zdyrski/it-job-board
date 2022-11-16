@@ -28,5 +28,6 @@ public class Offer {
     private String[] tags;
     private Date date;
     private String description;
-    private boolean approved;
+    private Integer approvalStatus;
+    private boolean archived;
 }

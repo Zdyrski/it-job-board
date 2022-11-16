@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   DiJava, DiJavascript1, DiPython, DiHtml5, DiPhp, DiAndroid, DiApple, DiDotnet, DiReact, DiScala,
 } from 'react-icons/di';
-import FilterDrawer from '../FilterDrawer/FilterDrawer';
+import OffersFilterDrawer from '../FilterDrawer/OffersFilterDrawer';
 import { Icon, IconAndText, MainContainer } from './FilterBar.styled';
 
 const filtersList = [
@@ -32,7 +32,7 @@ function FilterBar() {
   return (
     <MainContainer>
       <Button type="button" onClick={handleOpeningDrawer}>More Filters</Button>
-      <FilterDrawer open={drawerOpen} handleOpen={handleOpeningDrawer} />
+      <OffersFilterDrawer open={drawerOpen} handleOpen={handleOpeningDrawer} />
       <div>QuickFilters:</div>
       {filtersList.map((filter) => (
         <IconAndText key={filter.name} onClick={() => navigate(`/?skill=${filter.name}`)}>

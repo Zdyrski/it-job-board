@@ -10,6 +10,8 @@ import SignIn from './routes/SignIn';
 import SignUp from './routes/SignUp';
 import Test from './routes/Test';
 import ProtectedRoutes from './routes/ProtectedRoutes';
+import AdminOffers from './routes/AdminOffers';
+import AdminUsers from './routes/AdminUsers';
 
 function App() {
   globalStyles();
@@ -30,6 +32,10 @@ function App() {
         </Route>
         <Route element={<ProtectedRoutes authority="offer:read" />}>
           <Route path="/my-offers" element={<UserOffers />} />
+        </Route>
+        <Route element={<ProtectedRoutes authority="offer:approve" />}>
+          <Route path="/admin-panel/offers" element={<AdminOffers />} />
+          <Route path="/admin-panel/users" element={<AdminUsers />} />
         </Route>
         <Route path="/test" element={<Test />} />
         <Route path="/*" element={<div />} />
