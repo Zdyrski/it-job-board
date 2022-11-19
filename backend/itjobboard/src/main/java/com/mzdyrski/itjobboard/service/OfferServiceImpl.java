@@ -11,7 +11,7 @@ import javax.mail.MessagingException;
 import java.io.IOException;
 import java.util.*;
 
-import static com.mzdyrski.itjobboard.constants.EmailConstant.*;
+import static com.mzdyrski.itjobboard.enums.EmailType.*;
 import static com.mzdyrski.itjobboard.enums.Role.*;
 
 @RequiredArgsConstructor
@@ -27,8 +27,8 @@ public class OfferServiceImpl {
     final private MongoTemplate mongoTemplate;
 
     public OfferDetailedData getOfferDetails(String offerId) {
-        var offer = offerRepository.findById(offerId).get();
-        var employer = (Employer) userRepository.findById(offer.getEmployerId()).get();
+        var offer = offerRepository.findById(offerId).orElseThrow();
+        var employer = (Employer) userRepository.findById(offer.getEmployerId()).orElseThrow();
         var canApply = false;
         return new OfferDetailedData(
                 offer.getTitle(),
@@ -48,7 +48,7 @@ public class OfferServiceImpl {
     }
 
     public List<ListElOfferData> getOffersByFilters(Aggregation aggregation) {
-        // TODO applying possible filters and connect with employer img src
+        //TODO applying possible filters and connect with employer img src
         var offers = mongoTemplate.aggregate(aggregation, "offers", Offer.class);
         var result = new ArrayList<ListElOfferData>();
         for (Offer offer : offers) {
@@ -58,7 +58,7 @@ public class OfferServiceImpl {
     }
 
     public List<ListAdminElOfferData> getOffersByAdminFilters(Aggregation aggregation) {
-        // TODO applying possible filters and connect with employer img src
+        //TODO applying possible filters and connect with employer img src
         var offers = mongoTemplate.aggregate(aggregation, "offers", Offer.class);
         var result = new ArrayList<ListAdminElOfferData>();
         for (Offer offer : offers) {
@@ -77,7 +77,7 @@ public class OfferServiceImpl {
         } else if (Objects.equals(user.getRole(), ROLE_EMPLOYEE.name())) {
             var applications = applicationRepository.findApplicationsByUserId(user.getId());
             for (Application application : applications) {
-                var offer = offerRepository.findById(application.getOfferId()).get();
+                var offer = offerRepository.findById(application.getOfferId()).orElseThrow();
                 result.add(getListElForGivenOffer(offer));
             }
         }
@@ -103,7 +103,7 @@ public class OfferServiceImpl {
         newOffer.setDescription(offerData.description());
         newOffer.setApprovalStatus(0);
         offerRepository.save(newOffer);
-        emailService.sendEmail(employer.getEmail(), EMAIL_TYPE_OFFER_ADDED, "TEST", null);
+        emailService.sendEmail(employer.getEmail(), ACCOUNT_CREATED, "url");
     }
 
     public int checkIfCanApply(User user, String offerId) {
@@ -126,7 +126,6 @@ public class OfferServiceImpl {
         if (checkIfCanApply(employee, offerId) != 1) {
             return;
         }
-        System.out.println("applied");
         var application = new Application();
         application.setOfferId(offerId);
         application.setUserId(employee.getId());
@@ -155,7 +154,7 @@ public class OfferServiceImpl {
     }
 
     private ListElOfferData getListElForGivenOffer(Offer offer) {
-        var employerInfo = (Employer) userRepository.findById(offer.getEmployerId()).get();
+        var employerInfo = (Employer) userRepository.findById(offer.getEmployerId()).orElseThrow();
         return new ListElOfferData(
                 offer.getId(),
                 offer.getTitle(),
@@ -170,7 +169,7 @@ public class OfferServiceImpl {
     }
 
     private ListAdminElOfferData getListAdminElForGivenOffer(Offer offer) {
-        var employerInfo = (Employer) userRepository.findById(offer.getEmployerId()).get();
+        var employerInfo = (Employer) userRepository.findById(offer.getEmployerId()).orElseThrow();
         return new ListAdminElOfferData(
                 offer.getId(),
                 offer.getTitle(),
@@ -215,28 +214,10 @@ public class OfferServiceImpl {
     }
 
     private void sendEmailsAfterApplying(User employee, String offerId) throws MessagingException, IOException {
-        var offer = offerRepository.findById(offerId).get();
-        var employer = (Employer) userRepository.findById(offer.getEmployerId()).get();
+        var offer = offerRepository.findById(offerId).orElseThrow();
+        var employer = (Employer) userRepository.findById(offer.getEmployerId()).orElseThrow();
         var cv = cvRepository.findByEmployeeId(employee.getId());
-        emailService.sendEmail(employee.getEmail(), EMAIL_TYPE_APPLIED_EMPLOYEE, getEmailTextForEmployeeApplication(offer.getTitle(), employer.getCompanyName()), null);
-        emailService.sendEmail(employer.getEmail(), EMAIL_TYPE_APPLIED_EMPLOYER, getEmailTextForEmployerApplication(offer.getTitle()), cv);
-    }
-
-    private String getEmailTextForEmployeeApplication(String offer, String employer) {
-        return String.format("""
-                Hello,
-                you applied for %s on ITJobBoard to %s. Your CV was sent to employer.
-
-                We wish you the luck!
-                ITJobBoard Team""", offer, employer);
-    }
-
-    private String getEmailTextForEmployerApplication(String offer) {
-        return String.format("""
-                Hello,
-                someone applied for your offer %s on ITJobBoard. CV is in the attachments.\s
-
-                We wish you the luck in your recruitments!
-                ITJobBoard Team""", offer);
+        emailService.sendEmail(employee.getEmail(), APPLIED_EMPLOYEE,offer.getTitle(), employer.getCompanyName());
+        emailService.sendEmailWithCV(employer.getEmail(), APPLIED_EMPLOYER, cv, offer.getTitle());
     }
 }

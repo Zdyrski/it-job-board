@@ -65,7 +65,7 @@ public class SecurityConfiguration {
                 .authorizeRequests().antMatchers(PUBLIC_URLS).permitAll()
                 .antMatchers(EMPLOYEE_URLS).hasAuthority("offer:apply")
                 .antMatchers(EMPLOYER_URLS).hasAuthority("offer:create")
-                .antMatchers(ADMIN_URLS).hasAuthority("offer:approve")
+                .antMatchers(ADMIN_URLS).hasAuthority("adminPanel:manage")
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().accessDeniedHandler(jwtAccessDeniedHandler)

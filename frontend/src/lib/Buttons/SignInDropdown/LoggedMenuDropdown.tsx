@@ -7,13 +7,13 @@ function LoggedMenuDropdown() {
     sessionStorage.removeItem('jwt-token');
   };
 
-  const isEmployer = () => {
+  const hasAuthority = (authority: string) => {
     const token = sessionStorage.getItem('jwt-token');
     let decodedToken;
     if (token !== null) {
       try {
         decodedToken = jwtDecode(token);
-        if (((decodedToken as any).authorities as string[]).includes('offer:create')) return true;
+        if (((decodedToken as any).authorities as string[]).includes(authority)) return true;
       } catch (error) {
         sessionStorage.removeItem('jwt-token');
         return false;
@@ -23,11 +23,13 @@ function LoggedMenuDropdown() {
   };
 
   const switchLoggedContent = () => {
-    if (sessionStorage.getItem('jwt-token') !== null) {
+    if (hasAuthority('user:read')) {
       return (
         <MenuContent>
           <MenuItem href="/account">Account</MenuItem>
-          {isEmployer() && <MenuItem href="/add-offer">Add offer</MenuItem>}
+          {hasAuthority('offer:create') && <MenuItem href="/add-offer">Add offer</MenuItem>}
+          {hasAuthority('adminPanel:manage') && <MenuItem href="/admin-panel/offers">Manage offers</MenuItem>}
+          {hasAuthority('adminPanel:manage') && <MenuItem href="/admin-panel/users">Manage users</MenuItem>}
           <MenuItem href="/my-offers">My offers</MenuItem>
           <MenuItem href="/" onClick={handleLogout}>Logout</MenuItem>
         </MenuContent>

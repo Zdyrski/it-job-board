@@ -90,7 +90,7 @@ export interface AdminUserInterface {
     id: string
     email: string
     role: string
-    joinedDate: string
+    joinDate: string
     locked: boolean
     active: boolean
 }

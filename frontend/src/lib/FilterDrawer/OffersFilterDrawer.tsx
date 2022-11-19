@@ -102,7 +102,6 @@ function OffersFilterDrawer({ open, handleOpen } : FilterDrawerInterface) {
   useEffect(() => {
     axios.get(TAGS_URL).then((response) => {
       if (response.status === 200) {
-        // console.log(response);
         setOptions(response.data);
       }
     }).catch((error) => {

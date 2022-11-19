@@ -53,10 +53,10 @@ function SignInForm() {
     });
   };
 
-  const setErrorAlert = (error: any) => {
+  const setErrorAlert = (errorMessage: string) => {
     setResponseState({
       ...responseState,
-      errorMessage: error.message,
+      errorMessage,
       openError: true,
       openSuccess: false,
     });
@@ -66,13 +66,20 @@ function SignInForm() {
     const signInData = { email: state.email, password: state.password };
     axios.post(SIGN_IN_URL, signInData).then((response) => {
       if (response.status === 200) {
+        console.log(response);
         sessionStorage.setItem('jwt-token', response.headers['jwt-token']);
         setSuccessAlert();
         setState(initialState);
         setTimeout(() => navigate('/'), 2000);
       }
     }).catch((error) => {
-      setErrorAlert(error);
+      console.log(error);
+      switch (error.response.status) {
+        case 400: { setErrorAlert('Wrong email and/or password.'); break; }
+        case 401: { setErrorAlert('Tried to sign in too many times, please wait 15 min.'); break; }
+        case 403: { setErrorAlert('Your account has been banned. Please contact our Team.'); break; }
+        default: { setErrorAlert('Error'); break; }
+      }
     });
   };
 

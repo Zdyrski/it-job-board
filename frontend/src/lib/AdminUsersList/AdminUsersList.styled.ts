@@ -6,6 +6,7 @@ export const MainContainer = styled('div', {
   justifyContent: 'center',
   alignItems: 'center',
   width: '100%',
+  height: '90vh',
 });
 
 export const UserContainer = styled('div', {

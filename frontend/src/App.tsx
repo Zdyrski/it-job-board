@@ -12,6 +12,7 @@ import Test from './routes/Test';
 import ProtectedRoutes from './routes/ProtectedRoutes';
 import AdminOffers from './routes/AdminOffers';
 import AdminUsers from './routes/AdminUsers';
+import ConfirmEmail from './routes/ConfirmEmail';
 
 function App() {
   globalStyles();
@@ -23,6 +24,7 @@ function App() {
         <Route element={<ProtectedRoutes logged={false} authority="user:read" />}>
           <Route path="/sign-in" element={<SignIn />} />
           <Route path="/sign-up" element={<SignUp />} />
+          <Route path="/confirm" element={<ConfirmEmail />} />
         </Route>
         <Route element={<ProtectedRoutes authority="user:read" />}>
           <Route path="/account" element={<Account />} />

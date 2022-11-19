@@ -6,16 +6,6 @@ public class EmailConstant {
     public static final String PASSWORD = "vevyffhexpadyohb";
     public static final String FROM_EMAIL = "itjobboardmz@gmail.com";
     public static final String CC_EMAIL = "";
-    public static final String EMAIL_TYPE_ACCOUNT_CREATED = "ACCOUNT_CREATED";
-    public static final String EMAIL_TYPE_APPLIED_EMPLOYEE = "APPLIED_EMPLOYEE";
-    public static final String EMAIL_TYPE_APPLIED_EMPLOYER = "APPLIED_EMPLOYER";
-    public static final String EMAIL_TYPE_OFFER_ADDED = "OFFER_ADDED";
-    public static final String EMAIL_TYPE_OFFER_APPROVED = "OFFER_APPROVED";
-    public static final String EMAIL_SUBJECT_ACCOUNT_CREATED = "ITJobBoard - you crated account";
-    public static final String EMAIL_SUBJECT_APPLIED_EMPLOYEE = "ITJobBoard - you applied for offer";
-    public static final String EMAIL_SUBJECT_APPLIED_EMPLOYER = "ITJobBoard - new application for your offer";
-    public static final String EMAIL_SUBJECT_OFFER_ADDED = "ITJobBoard - your offer has been added and awaits approval";
-    public static final String EMAIL_SUBJECT_OFFER_APPROVED = "ITJobBoard - your offer has been approved";
     public static final String GMAIL_SMTP_SERVER = "smtp.gmail.com";
     public static final String SMTP_HOST = "mail.smtp.host";
     public static final String SMTP_AUTH = "mail.smtp.auth";

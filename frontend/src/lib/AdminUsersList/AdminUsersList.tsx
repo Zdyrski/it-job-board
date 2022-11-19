@@ -99,7 +99,7 @@ function AdminUsersList() {
                 id={user.id}
                 email={user.email}
                 role={user.role}
-                joinedDate={user.joinedDate}
+                joinDate={user.joinDate}
                 active={user.active}
                 locked={user.locked}
               />

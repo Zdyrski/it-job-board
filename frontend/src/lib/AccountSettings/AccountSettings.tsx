@@ -6,6 +6,7 @@ import axios from 'axios';
 import moment from 'moment';
 import React, { useState, useEffect } from 'react';
 import { getHeaders } from '../../constants';
+import AlertsComponent from '../AlertsComponent/AlertsComponent';
 import GlitchedButton from '../Buttons/GlitchedButton/GlitchedButton';
 import ListLogo from '../CompanyLogo/ListLogo';
 import OfferLogo from '../CompanyLogo/OfferLogo';
@@ -15,14 +16,14 @@ import {
   MainContainer, BackgroundContainer, SubContainer, DetailRowContainer, Title,
 } from './AccountSettings.styled';
 
-const CV_UPLOAD_URL = 'http://localhost:8080/user/account/cv';
 const ACCOUNT_URL = 'http://localhost:8080/user/account';
-const PASSWORD_CHANGE_URL = '';
+const CV_UPLOAD_URL = 'http://localhost:8080/user/account/cv';
+const PASSWORD_CHANGE_URL = 'http://localhost:8080/user/account/password';
 
 const initialUserState = {
   email: '',
   role: '',
-  joinedDate: '',
+  joinDate: '',
 };
 
 const initialEmployeeState = {
@@ -44,6 +45,13 @@ const initialPasswords = {
   showPassword: false,
 };
 
+const initialResponseState = {
+  openError: false,
+  openSuccess: false,
+  errorMessage: '',
+  successMessage: 'Succesfully changed password.',
+};
+
 function AccountSettings() {
   const [editMode, setEditMode] = useState(false);
   const [file, setFile] = useState<any | null>(null);
@@ -51,6 +59,7 @@ function AccountSettings() {
   const [employeeState, setEmployeeState] = useState(initialEmployeeState);
   const [employerState, setEmployerState] = useState(initialEmployerState);
   const [passwords, setPasswords] = useState(initialPasswords);
+  const [responseState, setResponseState] = useState(initialResponseState);
 
   const handlePasswordsChange = (e : React.ChangeEvent<HTMLInputElement>) => {
     setPasswords({ ...passwords, [e.target.name]: e.target.value });
@@ -61,7 +70,6 @@ function AccountSettings() {
   };
 
   const handleFileChange = (e : React.ChangeEvent<HTMLInputElement>) => {
-    console.log(e.target!.files![0]);
     setFile(e.target!.files![0]);
   };
 
@@ -101,14 +109,48 @@ function AccountSettings() {
     axios.post(CV_UPLOAD_URL, formData, { headers }).then((response) => {
       if (response.status === 200) {
         console.log(response);
-        // sessionStorage.setItem('jwt-token', response.headers['jwt-token']);
-        // setSuccessAlert();
-        // setState(initialState);
-        // setTimeout(() => navigate('/'), 2000);
+        // TODO something about cv
       }
     }).catch((error) => {
       console.log(error);
-      // setErrorAlert(error);
+    });
+  };
+
+  const setSuccessAlert = () => {
+    setResponseState({
+      ...responseState,
+      openError: false,
+      openSuccess: true,
+    });
+  };
+
+  const setErrorAlert = (errorMessage: string) => {
+    setResponseState({
+      ...responseState,
+      errorMessage,
+      openError: true,
+      openSuccess: false,
+    });
+  };
+
+  const handleChangePassword = () => {
+    const headers = getHeaders();
+    const data = {
+      oldPassword: passwords.oldPassword,
+      newPassword: passwords.newPassword,
+    };
+    axios.post(PASSWORD_CHANGE_URL, data, { headers }).then((response) => {
+      if (response.status === 200) {
+        console.log(response);
+        setPasswords(initialPasswords);
+        setSuccessAlert();
+      }
+    }).catch((error) => {
+      console.log(error);
+      switch (error.response.status) {
+        case 400: { setErrorAlert('Wrong password'); break; }
+        default: { setErrorAlert('Error'); break; }
+      }
     });
   };
 
@@ -125,7 +167,7 @@ function AccountSettings() {
       </DetailRowContainer>
       <DetailRowContainer>
         <div>Joined:</div>
-        <div>{moment(new Date(userState.joinedDate)).format('MMMM Do YYYY')}</div>
+        <div>{moment(new Date(userState.joinDate)).format('MMMM Do YYYY')}</div>
       </DetailRowContainer>
     </SubContainer>
   );
@@ -194,7 +236,7 @@ function AccountSettings() {
         setUserState({
           email: data.email,
           role: data.role,
-          joinedDate: data.joinedDate,
+          joinDate: data.joinDate,
         });
         if (data.role === 'ROLE_EMPLOYER') {
           setEmployerState({
@@ -210,14 +252,10 @@ function AccountSettings() {
           });
         }
         console.log(response);
-        // sessionStorage.setItem('jwt-token', response.headers['jwt-token']);
-        // setSuccessAlert();
-        // setState(initialState);
-        // setTimeout(() => navigate('/'), 2000);
       }
+      // TODO something
     }).catch((error) => {
       console.log(error);
-      // setErrorAlert(error);
     });
   }, []);
 
@@ -233,6 +271,12 @@ function AccountSettings() {
         {userState.role === 'ROLE_EMPLOYEE' && employeeCV}
         <SubContainer>
           <Title>Change password</Title>
+          <AlertsComponent
+            openError={responseState.openError}
+            openSuccess={responseState.openSuccess}
+            errorMessage={responseState.errorMessage}
+            successMessage={responseState.successMessage}
+          />
           <StyledTextField name="oldPassword" value={passwords.oldPassword} onChange={handlePasswordsChange} type={passwords.showPassword ? 'text' : 'password'} label="Old password" variant="standard" />
           <StyledTextField name="newPassword" value={passwords.newPassword} onChange={handlePasswordsChange} type={passwords.showPassword ? 'text' : 'password'} label="New password" variant="standard" />
           <StyledTextField name="newPassword2" value={passwords.newPassword2} onChange={handlePasswordsChange} type={passwords.showPassword ? 'text' : 'password'} label="Repeat new password" variant="standard" />
@@ -242,7 +286,7 @@ function AccountSettings() {
           >
             {passwords.showPassword ? <VisibilityOff /> : <Visibility />}
           </IconButton>
-          <GlitchedButton placeholder="Change Password" />
+          <GlitchedButton placeholder="Change Password" onClick={handleChangePassword} />
         </SubContainer>
       </BackgroundContainer>
     </MainContainer>

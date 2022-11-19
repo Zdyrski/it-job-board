@@ -10,7 +10,10 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import static org.springframework.http.HttpStatus.*;
+import java.util.NoSuchElementException;
+
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 @Slf4j
 @RestControllerAdvice
@@ -51,6 +54,11 @@ public class ExceptionHandling implements ErrorController {
     @ExceptionHandler(TokenExpiredException.class)
     public ResponseEntity<HttpResponse> tokenExpiredException(TokenExpiredException e) {
         return createHttpResponse(UNAUTHORIZED, e.getMessage());
+    }
+
+    @ExceptionHandler(NoSuchElementException.class)
+    public ResponseEntity<HttpResponse> noSuchElementException(NoSuchElementException e) {
+        return createHttpResponse(BAD_REQUEST, e.getMessage());
     }
 
 //    TODO uncomment

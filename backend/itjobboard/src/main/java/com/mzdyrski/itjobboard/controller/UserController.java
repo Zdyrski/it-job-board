@@ -11,7 +11,6 @@ import com.mzdyrski.itjobboard.security.JWTTokenProvider;
 import com.mzdyrski.itjobboard.service.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
+import javax.mail.MessagingException;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -29,6 +29,7 @@ import java.util.Optional;
 import static com.mzdyrski.itjobboard.constants.SecurityConstants.JWT_TOKEN_HEADER;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 
 @RequiredArgsConstructor
@@ -43,16 +44,26 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
-    public Mono<ResponseEntity<User>> register(@RequestBody RegisterData data) throws UserExistsException, InvalidEmailException, BadRequestDataException {
-        var newUser = userService.register(data.email(), data.password(), data.role());
-        return Mono.just(new ResponseEntity<>(newUser, OK));
+    public Mono<ResponseEntity<User>> register(@RequestBody RegisterData data) throws UserExistsException, InvalidEmailException, BadRequestDataException, MessagingException {
+        userService.register(data.email(), data.password(), data.role(), "http://localhost:3000");
+        return Mono.just(new ResponseEntity<>(OK));
+    }
+
+    @GetMapping("/register/confirm")
+    public Mono<ResponseEntity<User>> confirm(@RequestParam String token) {
+        if (token != null) {
+            userService.activateUser(token);
+            return Mono.just(new ResponseEntity<>(OK));
+        } else {
+            return Mono.just(new ResponseEntity<>(BAD_REQUEST));
+        }
     }
 
     @PostMapping("/login")
     public Mono<ResponseEntity<User>> login(@RequestBody LoginData loginData) {
-        authenticate(loginData.email(), loginData.password());  // TODO
-        var user = userService.findUserByEmail(loginData.email());
-        var jwtHeader = getJwtHeader(new UserSecurity(user));
+        authenticate(loginData.email(), loginData.password());
+        var user = userService.loadUserByUsername(loginData.email());
+        var jwtHeader = getJwtHeader(user);
         return Mono.just(new ResponseEntity<>(null, jwtHeader, OK));
     }
 
@@ -76,16 +87,14 @@ public class UserController {
     public Mono<ResponseEntity<User>> employeeCvUpdate(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @RequestPart(name = "file") MultipartFile multipartFile) throws IOException {
         var user = userService.getUserFromTokenHeader(authorizationHeader);
         // TODO validacja pliku
-        System.out.println("1 " + multipartFile.getOriginalFilename());
         userService.updateEmployeeCv((Employee) user, multipartFile);
-        return Mono.just(new ResponseEntity<>(user, OK));
+        return Mono.just(new ResponseEntity<>(OK));
     }
 
-    @PostMapping("/password")
-    public Mono<ResponseEntity<String>> passwordUpdate(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @RequestBody ChangePasswordData data) {
-        var user = userService.getUserFromTokenHeader(authorizationHeader);
-        userService.changePassword(user, data.oldPassword(), data.newPassword());
-        return Mono.just(new ResponseEntity<>("PASSWORD CHANGED", OK));
+    @PostMapping("/account/password")
+    public Mono<ResponseEntity<String>> passwordUpdate(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @RequestBody ChangePasswordData data) throws BadRequestDataException {
+        userService.changePassword(authorizationHeader, data);
+        return Mono.just(new ResponseEntity<>(OK));
     }
 
     @PostMapping("/resetpassword")
@@ -96,13 +105,13 @@ public class UserController {
 
     @GetMapping("/admin")
     public Mono<ResponseEntity<List<User>>> getUsers(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                                                                   @RequestParam Optional<String> userId,
-                                                                   @RequestParam Optional<String> email,
-                                                                   @RequestParam Optional<String> role,
-                                                                   @RequestParam Optional<Boolean> active,
-                                                                   @RequestParam Optional<Boolean> locked,
-                                                                   @RequestParam Optional<Long> page,
-                                                                   @RequestParam Optional<Long> limit) {
+                                                     @RequestParam Optional<String> userId,
+                                                     @RequestParam Optional<String> email,
+                                                     @RequestParam Optional<String> role,
+                                                     @RequestParam Optional<Boolean> active,
+                                                     @RequestParam Optional<Boolean> locked,
+                                                     @RequestParam Optional<Long> page,
+                                                     @RequestParam Optional<Long> limit) {
         var skip0 = skip(0L);
         var userIdAgg = userId.isPresent() ? match(new Criteria("id").regex(userId.orElse(""))) : skip0;
         var emailAgg = email.isPresent() ? match(new Criteria("email").regex(email.orElse(""))) : skip0;
@@ -112,8 +121,8 @@ public class UserController {
         var skipAgg = (page.isPresent() && limit.isPresent()) ? skip(page.get() * limit.get()) : skip0;
         var limitAgg = limit.isPresent() ? limit(limit.get()) : skip0;
 
-        var sortCriteria = sort(Sort.Direction.DESC, "joinedDate");
-        var projectionOperation = project().andInclude("id", "email", "role", "joinedDate", "active", "locked");
+        var sortCriteria = sort(Sort.Direction.DESC, "joinDate");
+        var projectionOperation = project().andInclude("id", "email", "role", "joinDate", "active", "locked");
 
         var aggregation = newAggregation(
                 userIdAgg,

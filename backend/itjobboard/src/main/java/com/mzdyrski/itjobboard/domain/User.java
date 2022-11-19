@@ -20,7 +20,7 @@ public class User {
     private String password;
     private String role;
     private String[] authorities;
-    private Date joinedDate;
+    private Date joinDate;
     private boolean active;
     private boolean locked;
 

@@ -5,7 +5,7 @@ import { AdminUserInterface } from '../../types';
 import { UserContainer, Column, InfoRow } from './AdminUsersList.styled';
 
 function User({
-  id, email, role, joinedDate, locked, active,
+  id, email, role, joinDate, locked, active,
 } : AdminUserInterface) {
   return (
     <UserContainer>
@@ -26,8 +26,8 @@ function User({
       <Divider orientation="vertical" flexItem />
       <Column>
         <InfoRow>
-          <div>Joined date:</div>
-          <div>{moment(new Date(joinedDate)).format('MMMM Do YYYY')}</div>
+          <div>Join date:</div>
+          <div>{moment(new Date(joinDate)).format('MMMM Do YYYY')}</div>
         </InfoRow>
         <InfoRow>
           <div>Is active:</div>

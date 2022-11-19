@@ -1,8 +1,8 @@
 package com.mzdyrski.itjobboard.service;
 
 import com.mzdyrski.itjobboard.domain.EmployeesCv;
+import com.mzdyrski.itjobboard.enums.EmailType;
 import com.sun.mail.smtp.SMTPTransport;
-import org.bson.types.Binary;
 import org.springframework.stereotype.Service;
 
 import javax.activation.DataHandler;
@@ -12,11 +12,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.security.InvalidParameterException;
 import java.util.Date;
 
 import static com.mzdyrski.itjobboard.constants.EmailConstant.*;
@@ -24,8 +21,16 @@ import static com.mzdyrski.itjobboard.constants.EmailConstant.*;
 @Service
 public class EmailService {
 
-    public void sendEmail(String email, String emailType, String emailText, EmployeesCv cv) throws MessagingException, IOException {
-        var message = createEmail(email, emailType, emailText, cv);
+    public void sendEmail(String email, EmailType emailType, String... placeholders) throws MessagingException {
+        var message = createEmail(email, emailType, placeholders);
+        var smtpTransport = (SMTPTransport) getEmailSession().getTransport(SMTPS);
+        smtpTransport.connect(GMAIL_SMTP_SERVER, USERNAME, PASSWORD);
+        smtpTransport.sendMessage(message, message.getAllRecipients());
+        smtpTransport.close();
+    }
+
+    public void sendEmailWithCV(String email, EmailType emailType, EmployeesCv cv, String... placeholders) throws MessagingException {
+        var message = createEmailWithCV(email, emailType, placeholders, cv);
         var smtpTransport = (SMTPTransport) getEmailSession().getTransport(SMTPS);
         smtpTransport.connect(GMAIL_SMTP_SERVER, USERNAME, PASSWORD);
         smtpTransport.sendMessage(message, message.getAllRecipients());
@@ -47,17 +52,28 @@ public class EmailService {
         });
     }
 
-    private Message createEmail(String email, String emailType, String emailText, EmployeesCv cv) throws MessagingException, IOException {
+    private MimeMessage getInitialMessage(String email, EmailType emailType) throws MessagingException {
         var message = new MimeMessage(getEmailSession());
         message.setFrom(new InternetAddress(FROM_EMAIL));
         message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(email, false));
         message.setRecipients(Message.RecipientType.CC, InternetAddress.parse(CC_EMAIL, false));
-        setMessageSubject(message, emailType);
+        message.setSubject(emailType.title);
         message.setSentDate(new Date());
-        message.setText(emailText);
-        if(cv != null){
+        return message;
+    }
+
+    private Message createEmail(String email, EmailType emailType, String[] placeholders) throws MessagingException {
+        var message = getInitialMessage(email, emailType);
+        message.setText(getMessageText(emailType, placeholders));
+        message.saveChanges();
+        return message;
+    }
+
+    private Message createEmailWithCV(String email, EmailType emailType, String[] placeholders, EmployeesCv cv) throws MessagingException {
+        var message = getInitialMessage(email, emailType);
+        if (cv != null) {
             var messageBodyPart = new MimeBodyPart();
-            messageBodyPart.setText(emailText);
+            messageBodyPart.setText(getMessageText(emailType, placeholders));
             var attachmentPart = new MimeBodyPart();
             var bds = new ByteArrayDataSource(cv.getFile().getData(), cv.getFileType());
             attachmentPart.setDataHandler(new DataHandler(bds));
@@ -71,26 +87,56 @@ public class EmailService {
         return message;
     }
 
-    private void setMessageSubject(MimeMessage message, String emailType) throws MessagingException {
+    private String getMessageText(EmailType emailType, String... placeholders) {
         switch (emailType) {
-            case EMAIL_TYPE_ACCOUNT_CREATED -> message.setSubject(EMAIL_SUBJECT_ACCOUNT_CREATED);
-            case EMAIL_TYPE_APPLIED_EMPLOYEE -> message.setSubject(EMAIL_SUBJECT_APPLIED_EMPLOYEE);
-            case EMAIL_TYPE_APPLIED_EMPLOYER -> message.setSubject(EMAIL_SUBJECT_APPLIED_EMPLOYER);
-            case EMAIL_TYPE_OFFER_ADDED -> message.setSubject(EMAIL_SUBJECT_OFFER_ADDED);
-            case EMAIL_TYPE_OFFER_APPROVED -> message.setSubject(EMAIL_SUBJECT_OFFER_APPROVED);
-        }
-    }
+            case ACCOUNT_CREATED -> {
+                return String.format("""
+                        Hello,
+                        
+                        thank you for signing up on ITJobBoard.
+                        Below is your account activation link.
+                        %s/confirm?token=%s
+                                                
+                        We wish you the luck in your recruitments!
+                        ITJobBoard Team""", placeholders[0], placeholders[1]);
+            }
+            case APPLIED_EMPLOYEE -> {
+                return String.format("""
+                        Hello,
+                        
+                        you applied for %s on ITJobBoard to %s. Your CV was sent to employer.
 
-//    private void setMessageText(MimeMessage message, String emailType) throws MessagingException {
-//        switch (emailType) {
-//            case EMAIL_TYPE_ACCOUNT_CREATED ->
-//                    message.setText(String.format("Hello, \n\n Thank you for creating a new account at our service. \n\n The ITJobBoard Team"));
-//            case EMAIL_TYPE_APPLIED ->
-//                    message.setText(String.format("Hello, \n\n You applied for offer. \n\n The ITJobBoard Team"));
-//            case EMAIL_TYPE_OFFER_ADDED ->
-//                    message.setText(String.format("Hello, \n\n Your offer was added. Now please wait for our staff approval. \n\n The ITJobBoard Team"));
-//            case EMAIL_TYPE_OFFER_APPROVED ->
-//                    message.setText(String.format("Hello, \n\n Thank you for your time, your offer was approved. Await new notifications.\n\n The ITJobBoard Team"));
-//        }
-//    }
+                        We wish you the luck!
+                        ITJobBoard Team""", placeholders[0], placeholders[1]);
+            }
+            case APPLIED_EMPLOYER -> {
+                return String.format("""
+                        Hello,
+                        
+                        someone applied for your offer %s on ITJobBoard. CV is in the attachments.
+
+                        We wish you the luck in your recruitments!
+                        ITJobBoard Team""", placeholders[0]);
+            }
+            case OFFER_ADDED -> {
+                return String.format("""
+                        Hello,
+                        
+                        your offer %s on ITJobBoard has been added. Please wait for its approval or contact our Team.
+
+                        We wish you the luck in your recruitments!
+                        ITJobBoard Team""", placeholders[0]);
+            }
+            case OFFER_APPROVED -> {
+                return String.format("""
+                        Hello,
+                        your offer %s on ITJobBoard has been approved.
+
+                        We wish you the luck in your recruitments!
+                        ITJobBoard Team""", placeholders[0]);
+            }
+        }
+        //TODO custom exception maybe
+        throw new InvalidParameterException();
+    }
 }

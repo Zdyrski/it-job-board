@@ -70,11 +70,13 @@ function SignUpForm() {
     const signUpData = { email: state.email, password: state.password1, role: state.role };
     axios.post(SIGN_UP_URL, signUpData).then((response) => {
       if (response.status === 200) {
+        console.log(response);
         setSuccessAlert();
         setState(initialState);
         setTimeout(() => navigate('/sign-in'), 2000);
       }
     }).catch((error) => {
+      console.log(error);
       setErrorAlert(error);
     });
   };

@@ -104,7 +104,9 @@ function TechStackAdder({ techStack, setTechStack }: TechStackInterface) {
             icon={<LevelDot full />}
             emptyIcon={<LevelDot full={false} />}
             onChange={(_event, newValue) => {
-              setNewSkillLvl(newValue);
+              if (newValue !== null) {
+                setNewSkillLvl(newValue);
+              }
             }}
             onChangeActive={(_event, newHover) => {
               setHoverSkillLvl(newHover);
