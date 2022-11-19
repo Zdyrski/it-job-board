@@ -21,7 +21,7 @@ public class OfferServiceImpl {
     final private OfferRepository offerRepository;
     final private ApplicationRepository applicationRepository;
     final private UserRepository userRepository;
-    final private TagRepository tagRepository;
+
     final private EmployeesCvRepository cvRepository;
     final private EmailService emailService;
     final private MongoTemplate mongoTemplate;
@@ -103,7 +103,7 @@ public class OfferServiceImpl {
         newOffer.setDescription(offerData.description());
         newOffer.setApprovalStatus(0);
         offerRepository.save(newOffer);
-        emailService.sendEmail(employer.getEmail(), ACCOUNT_CREATED, "url");
+        emailService.sendEmail(employer.getEmail(), OFFER_ADDED, "url");
     }
 
     public int checkIfCanApply(User user, String offerId) {
@@ -131,16 +131,6 @@ public class OfferServiceImpl {
         application.setUserId(employee.getId());
         applicationRepository.save(application);
         sendEmailsAfterApplying(employee, offerId);
-    }
-
-    public String[] getAllTags() {
-        return tagRepository.findAll().stream().map(Tag::getName).toArray(String[]::new);
-    }
-
-    public void addTag(TagData tagData) {
-        var newTag = new Tag();
-        newTag.setName(tagData.name());
-        tagRepository.save(newTag);
     }
 
     public void setOfferStatus(User admin, String offerId, OfferStatusData data) {

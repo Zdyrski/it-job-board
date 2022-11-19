@@ -70,7 +70,12 @@ public class OffersController {
         return Mono.just(new ResponseEntity<>(offersList, OK));
     }
 
-
+    @PostMapping("")
+    public Mono<ResponseEntity> addOffer(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @RequestBody OfferData data) throws MessagingException, IOException {
+        var employer = userService.getUserFromTokenHeader(authorizationHeader);
+        offerService.addOffer(employer, data);
+        return Mono.just(new ResponseEntity<>(OK));
+    }
 
     @GetMapping("/{id}")
     public Mono<ResponseEntity<OfferDetailedData>> getOffer(@PathVariable String id) {
@@ -97,25 +102,6 @@ public class OffersController {
         var user = userService.getUserFromTokenHeader(authorizationHeader);
         var userOffersList = offerService.getOffersByUser(user);
         return Mono.just(new ResponseEntity<>(userOffersList, OK));
-    }
-
-    @PostMapping("/add-offer")
-    public Mono<ResponseEntity> addOffer(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @RequestBody OfferData data) throws MessagingException, IOException {
-        var employer = userService.getUserFromTokenHeader(authorizationHeader);
-        offerService.addOffer(employer, data);
-        return Mono.just(new ResponseEntity<>(OK));
-    }
-
-    @GetMapping("/tags")
-    public Mono<ResponseEntity<String[]>> getTags() {
-        var tags = offerService.getAllTags();
-        return Mono.just(new ResponseEntity<>(tags, OK));
-    }
-
-    @PostMapping("/tags")
-    public Mono<ResponseEntity> addTag(@RequestBody TagData data) {
-        offerService.addTag(data);
-        return Mono.just(new ResponseEntity<>(data, OK));
     }
 
     @GetMapping("/admin")
