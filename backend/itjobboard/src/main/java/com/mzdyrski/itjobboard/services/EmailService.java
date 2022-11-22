@@ -1,8 +1,9 @@
-package com.mzdyrski.itjobboard.service;
+package com.mzdyrski.itjobboard.services;
 
 import com.mzdyrski.itjobboard.domain.EmployeesCv;
 import com.mzdyrski.itjobboard.enums.EmailType;
 import com.sun.mail.smtp.SMTPTransport;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.activation.DataHandler;
@@ -12,7 +13,6 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.util.ByteArrayDataSource;
-import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.util.Date;
 
@@ -21,6 +21,7 @@ import static com.mzdyrski.itjobboard.constants.EmailConstant.*;
 @Service
 public class EmailService {
 
+    @Async
     public void sendEmail(String email, EmailType emailType, String... placeholders) throws MessagingException {
         var message = createEmail(email, emailType, placeholders);
         var smtpTransport = (SMTPTransport) getEmailSession().getTransport(SMTPS);
@@ -29,6 +30,7 @@ public class EmailService {
         smtpTransport.close();
     }
 
+    @Async
     public void sendEmailWithCV(String email, EmailType emailType, EmployeesCv cv, String... placeholders) throws MessagingException {
         var message = createEmailWithCV(email, emailType, placeholders, cv);
         var smtpTransport = (SMTPTransport) getEmailSession().getTransport(SMTPS);
@@ -92,7 +94,7 @@ public class EmailService {
             case ACCOUNT_CREATED -> {
                 return String.format("""
                         Hello,
-                        
+                                                
                         thank you for signing up on ITJobBoard.
                         Below is your account activation link.
                         %s/confirm?token=%s
@@ -103,7 +105,7 @@ public class EmailService {
             case APPLIED_EMPLOYEE -> {
                 return String.format("""
                         Hello,
-                        
+                                                
                         you applied for %s on ITJobBoard to %s. Your CV was sent to employer.
 
                         We wish you the luck!
@@ -112,7 +114,7 @@ public class EmailService {
             case APPLIED_EMPLOYER -> {
                 return String.format("""
                         Hello,
-                        
+                                                
                         someone applied for your offer %s on ITJobBoard. CV is in the attachments.
 
                         We wish you the luck in your recruitments!
@@ -121,7 +123,7 @@ public class EmailService {
             case OFFER_ADDED -> {
                 return String.format("""
                         Hello,
-                        
+                                                
                         your offer %s on ITJobBoard has been added. Please wait for its approval or contact our Team.
 
                         We wish you the luck in your recruitments!

@@ -4,7 +4,7 @@ import Tags from '../Tags/Tags';
 import {
   MainContainer, CompanyTags, SubContainer,
 } from './OfferTagline.styled';
-import { OfferTaglineInterface } from '../../types';
+import { OfferTaglineInterface } from '../../utils/types';
 import { ReactComponent as Company } from '../../assets/company.svg';
 import LocationAndRemoteTags from './LocationAndRemoteTags';
 
@@ -15,7 +15,7 @@ const CompanyT = styled(Company, {
 });
 
 function OfferTagline({
-  companyName, location, remote, mainTags,
+  companyName, addressData, remoteStatus, mainTags,
 } : OfferTaglineInterface) {
   return (
     <MainContainer>
@@ -24,7 +24,7 @@ function OfferTagline({
           <CompanyT />
           {companyName}
         </SubContainer>
-        <LocationAndRemoteTags location={location} remote={remote} />
+        <LocationAndRemoteTags addressData={addressData} shortAddress remoteStatus={remoteStatus} />
       </CompanyTags>
       <Tags tagsArray={mainTags} />
     </MainContainer>

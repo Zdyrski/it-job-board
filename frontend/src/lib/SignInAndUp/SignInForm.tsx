@@ -67,7 +67,7 @@ function SignInForm() {
     axios.post(SIGN_IN_URL, signInData).then((response) => {
       if (response.status === 200) {
         console.log(response);
-        sessionStorage.setItem('jwt-token', response.headers['jwt-token']);
+        localStorage.setItem('jwt-token', response.headers['jwt-token']);
         setSuccessAlert();
         setState(initialState);
         setTimeout(() => navigate('/'), 2000);

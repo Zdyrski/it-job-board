@@ -5,8 +5,8 @@ import {
 import axios from 'axios';
 import { useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { getHeaders } from '../../constants';
-import { AdminUserInterface } from '../../types';
+import { getHeaders } from '../../utils/helperFunctions';
+import { AdminUserInterface } from '../../utils/types';
 import { StyledInfinityScroll, StyledRadioGroup } from '../OffersList/Offer.styled';
 import { MainContainer, UserAndRadio } from './AdminUsersList.styled';
 import User from './User';

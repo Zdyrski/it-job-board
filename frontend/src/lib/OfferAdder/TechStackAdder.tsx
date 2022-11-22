@@ -2,17 +2,19 @@ import {
   DeleteOutline, Add,
 } from '@mui/icons-material';
 import {
-  Autocomplete, IconButton, Rating,
+  Alert,
+  Autocomplete, Collapse, IconButton, Rating,
 } from '@mui/material';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import { SkillInterface, TechStackInterface } from '../../types';
+import { OFFER_MIN_TAGS_NUMBER, OFFER_MAX_TAGS_NUMBER } from '../../utils/constants';
+import { SkillInterface, TechStackInterface } from '../../utils/types';
 import { StyledTextField } from '../Inputs/Inputs.styled';
 import { LevelDot } from '../OfferDetailed/TechStack.styled';
 import { SubContainer, Title, InputsContainer } from './OfferAdder.styled';
 import { MainContainer, SkillAndRatingContainer } from './TechStackAdder.styled';
 
-const TAGS_URL = 'http://localhost:8080/offers/tags';
+const TAGS_URL = 'http://localhost:8080/tags';
 
 const SKILL_LEVEL_MAP = new Map([
   [1, 'nice to have'],
@@ -24,7 +26,7 @@ const SKILL_LEVEL_MAP = new Map([
 
 const initialSkillLvl = 3;
 
-function TechStackAdder({ techStack, setTechStack }: TechStackInterface) {
+function TechStackAdder({ errorsState, techStack, setTechStack }: TechStackInterface) {
   // TODO call to tags api
   const [newSkillName, setNewSkillName] = useState<string | undefined>('');
   const [newSkillLvl, setNewSkillLvl] = useState<number | null>(initialSkillLvl);
@@ -61,7 +63,7 @@ function TechStackAdder({ techStack, setTechStack }: TechStackInterface) {
   return (
     <SubContainer>
       <Title>
-        Tech stack (at least 3)*
+        Tech stack (min 3, max 8)*
       </Title>
       {techStack.map((skill : SkillInterface) => (
         <MainContainer key={skill.skillName}>
@@ -121,6 +123,9 @@ function TechStackAdder({ techStack, setTechStack }: TechStackInterface) {
         </SkillAndRatingContainer>
       </div>
       <InputsContainer />
+      <Collapse in={errorsState}>
+        <Alert variant="outlined" severity="error">{`Number of skills needs to be between ${OFFER_MIN_TAGS_NUMBER} and ${OFFER_MAX_TAGS_NUMBER}.`}</Alert>
+      </Collapse>
     </SubContainer>
   );
 }

@@ -1,7 +1,13 @@
+export interface AddressDataInterface {
+    country: string
+    city: string
+    street: string
+}
+
 export interface OfferTaglineInterface {
     companyName: string
-    location: string
-    remote: string
+    addressData: AddressDataInterface
+    remoteStatus: string
     mainTags: string[]
 }
 
@@ -17,14 +23,16 @@ export interface CompanyInterface {
 
 export interface OfferInterface {
     offerId: string
-    city: string;
+    addressData: AddressDataInterface;
     companyLogoUrl: string
     companyName: string
     date : string
-    remote: string
+    remoteStatus: string
     salary: string
     tags: string[]
     title: string
+    approvalStatus?: number
+    archived?: boolean
 }
 
 export interface AdminOfferInterface extends OfferInterface {
@@ -44,7 +52,7 @@ export interface SkillInterface {
 
 export interface ContractInterface {
     name: string
-    salaryUndisclosed: boolean
+    undisclosed: boolean
     minMoney: number
     maxMoney: number
 }
@@ -63,7 +71,7 @@ export interface OfferDetailedInterface {
     companyLogoUrl: string
     companySiteUrl: string
     experienceLevel: string
-    city: string
+    addressData: AddressDataInterface
     remote: string
     contracts: ContractInterface[]
     techStack: SkillInterface[]
@@ -71,7 +79,21 @@ export interface OfferDetailedInterface {
     date: string
 }
 
+export interface OfferAndCompanyShortInterface {
+    title: string
+    companyName: string
+    companySize: number
+    companyLogoUrl: string
+    companySiteUrl: string
+    experienceLevel: string
+    addressData: AddressDataInterface
+    remoteStatus: string
+    contracts: ContractInterface[]
+    date: string
+}
+
 export interface TechStackInterface {
+    errorsState: boolean
     techStack: SkillInterface[]
     setTechStack: React.Dispatch<React.SetStateAction<any>>
 }

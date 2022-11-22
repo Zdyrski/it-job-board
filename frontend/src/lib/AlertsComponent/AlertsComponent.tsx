@@ -1,6 +1,6 @@
 import { Alert, Collapse } from '@mui/material';
 import React from 'react';
-import { AlertsComponentInterface } from '../../types';
+import { AlertsComponentInterface } from '../../utils/types';
 
 function AlertsComponent({
   openError, openSuccess, errorMessage, successMessage,

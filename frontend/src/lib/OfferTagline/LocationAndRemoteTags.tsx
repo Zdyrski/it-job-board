@@ -1,6 +1,9 @@
 import { styled } from '../stitches.config';
 import { ReactComponent as Location } from '../../assets/location.svg';
-import { CompanyTags, SubContainer, RemoteTag } from './OfferTagline.styled';
+import {
+  CompanyTags2, SubContainer, RemoteTag, BlockLocation,
+} from './OfferTagline.styled';
+import { AddressDataInterface } from '../../utils/types';
 
 const LocationT = styled(Location, {
   stroke: '$secondaryColor',
@@ -10,26 +13,31 @@ const LocationT = styled(Location, {
 });
 
 interface Props {
-    location: string
-    remote : string
+    addressData: AddressDataInterface
+    shortAddress?: boolean
+    remoteStatus : string
 }
 
-function LocationAndRemoteTags({ location, remote } : Props) {
+function LocationAndRemoteTags({ addressData, shortAddress, remoteStatus } : Props) {
   return (
-    <CompanyTags>
+    <CompanyTags2>
       <SubContainer>
         <LocationT />
-        {location}
+        <BlockLocation>
+          {shortAddress ? addressData.city : `${addressData.country}, ${addressData.city}, ${addressData.street}`}
+        </BlockLocation>
       </SubContainer>
-      {remote && (
-      <RemoteTag>
-        {remote}
-        {' '}
-        remote
-      </RemoteTag>
-      )}
-    </CompanyTags>
+      {{
+        NO: <div />,
+        PARTIAL: <RemoteTag>Partially remote</RemoteTag>,
+        FULL_TIME: <RemoteTag>Full time remote</RemoteTag>,
+      }[remoteStatus]}
+    </CompanyTags2>
   );
 }
+
+LocationAndRemoteTags.defaultProps = {
+  shortAddress: false,
+};
 
 export default LocationAndRemoteTags;

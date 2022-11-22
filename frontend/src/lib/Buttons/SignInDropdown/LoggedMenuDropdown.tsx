@@ -1,25 +1,9 @@
-import jwtDecode from 'jwt-decode';
-import React from 'react';
+import { hasAuthority } from '../../../utils/helperFunctions';
 import { Menu, MenuContent, MenuItem } from './DropdownButton.styled';
 
 function LoggedMenuDropdown() {
   const handleLogout = () => {
-    sessionStorage.removeItem('jwt-token');
-  };
-
-  const hasAuthority = (authority: string) => {
-    const token = sessionStorage.getItem('jwt-token');
-    let decodedToken;
-    if (token !== null) {
-      try {
-        decodedToken = jwtDecode(token);
-        if (((decodedToken as any).authorities as string[]).includes(authority)) return true;
-      } catch (error) {
-        sessionStorage.removeItem('jwt-token');
-        return false;
-      }
-    }
-    return false;
+    localStorage.removeItem('jwt-token');
   };
 
   const switchLoggedContent = () => {

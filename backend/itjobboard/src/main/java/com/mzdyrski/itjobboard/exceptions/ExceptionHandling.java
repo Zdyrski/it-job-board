@@ -10,10 +10,10 @@ import org.springframework.security.authentication.LockedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.mail.MessagingException;
 import java.util.NoSuchElementException;
 
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.UNAUTHORIZED;
+import static org.springframework.http.HttpStatus.*;
 
 @Slf4j
 @RestControllerAdvice
@@ -25,6 +25,7 @@ public class ExceptionHandling implements ErrorController {
     private static final String INTERNAL_SERVER_ERROR_MSG = "";
     private static final String INCORRECT_CREDENTIALS = "EMAIL/PASSWORD INCORRECT";
     private static final String NOT_ENOUGH_PERMISSION = "";
+    private static final String EMAIL_SENDING_ERROR = "THERE WAS AN ERROR WHILE SENDING AN EMAIL";
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<HttpResponse> badCredentialsException() {
@@ -59,6 +60,16 @@ public class ExceptionHandling implements ErrorController {
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<HttpResponse> noSuchElementException(NoSuchElementException e) {
         return createHttpResponse(BAD_REQUEST, e.getMessage());
+    }
+
+    @ExceptionHandler(OfferNotAvailableException.class)
+    public ResponseEntity<HttpResponse> offerNotAvailableException(OfferNotAvailableException e) {
+        return createHttpResponse(FORBIDDEN, e.getMessage());
+    }
+
+    @ExceptionHandler(MessagingException.class)
+    public ResponseEntity<HttpResponse> offerNotAvailableException() {
+        return createHttpResponse(INTERNAL_SERVER_ERROR, EMAIL_SENDING_ERROR);
     }
 
 //    TODO uncomment

@@ -7,6 +7,15 @@ export const MainContainer = styled('div', {
   width: '100%',
 });
 
+export const MainContainer2 = styled('div', {
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  width: '100%',
+  position: 'relative',
+  top: '2rem',
+});
+
 export const SubContainer = styled('div', {
   display: 'flex',
   justifyContent: 'center',
@@ -63,12 +72,25 @@ export const CompanyTags = styled('div', {
   justifyContent: 'flex-start',
 });
 
+export const CompanyTags2 = styled('div', {
+  display: 'flex',
+  justifyContent: 'space-between',
+});
+
+export const BlockLocation = styled('div', {
+  display: 'inline-block',
+  justifyContent: 'flex-start',
+  whiteSpace: 'nowrap',
+});
+
 export const RemoteTag = styled('div', {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
   border: '2px solid $backgroundColor',
   background: '$remoteBackgroundColor',
   color: '$violetColor',
   borderRadius: '1rem',
-  display: 'inline-block',
   padding: '0.2rem 0.6rem',
   margin: '0.5rem',
 });

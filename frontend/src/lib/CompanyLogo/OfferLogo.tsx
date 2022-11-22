@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ListImg2, MainContainer2 } from './ListLogo.styled';
-import { CompanyInterface } from '../../types';
+import { CompanyInterface } from '../../utils/types';
 import logo from './ITJOBBOARD_LOGO.jpg';
 
 function OfferLogo({ logoSrc } : CompanyInterface) {

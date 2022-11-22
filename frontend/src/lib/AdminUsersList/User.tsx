@@ -1,7 +1,7 @@
 import { Divider } from '@mui/material';
 import moment from 'moment';
 import React from 'react';
-import { AdminUserInterface } from '../../types';
+import { AdminUserInterface } from '../../utils/types';
 import { UserContainer, Column, InfoRow } from './AdminUsersList.styled';
 
 function User({

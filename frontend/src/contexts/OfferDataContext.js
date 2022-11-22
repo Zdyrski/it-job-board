@@ -1,5 +1,5 @@
 import { createContext } from 'react';
 
-const OfferDataContext = createContext(1);
+const OfferDataContext = createContext();
 
 export default OfferDataContext;

@@ -1,4 +1,4 @@
-package com.mzdyrski.itjobboard.controller;
+package com.mzdyrski.itjobboard.controllers;
 
 import com.mzdyrski.itjobboard.dataTemplates.*;
 import com.mzdyrski.itjobboard.domain.Employee;
@@ -8,7 +8,7 @@ import com.mzdyrski.itjobboard.exceptions.BadRequestDataException;
 import com.mzdyrski.itjobboard.exceptions.InvalidEmailException;
 import com.mzdyrski.itjobboard.exceptions.UserExistsException;
 import com.mzdyrski.itjobboard.security.JWTTokenProvider;
-import com.mzdyrski.itjobboard.service.UserServiceImpl;
+import com.mzdyrski.itjobboard.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -29,8 +29,7 @@ import java.util.Optional;
 import static com.mzdyrski.itjobboard.constants.SecurityConstants.JWT_TOKEN_HEADER;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_EXPOSE_HEADERS;
-import static org.springframework.http.HttpStatus.BAD_REQUEST;
-import static org.springframework.http.HttpStatus.OK;
+import static org.springframework.http.HttpStatus.*;
 
 @RequiredArgsConstructor
 @Service
@@ -39,14 +38,14 @@ import static org.springframework.http.HttpStatus.OK;
 @CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 
-    private final UserServiceImpl userService;
+    private final UserService userService;
     private final JWTTokenProvider jwtTokenProvider;
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
     public Mono<ResponseEntity<User>> register(@RequestBody RegisterData data) throws UserExistsException, InvalidEmailException, BadRequestDataException, MessagingException {
-        userService.register(data.email(), data.password(), data.role(), "http://localhost:3000");
-        return Mono.just(new ResponseEntity<>(OK));
+        userService.register(data, "http://localhost:3000");
+        return Mono.just(new ResponseEntity<>(CREATED));
     }
 
     @GetMapping("/register/confirm")

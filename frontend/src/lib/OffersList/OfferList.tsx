@@ -2,8 +2,8 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { getHeaders } from '../../constants';
-import { OffersListInterface, OfferInterface } from '../../types';
+import { getHeaders } from '../../utils/helperFunctions';
+import { OffersListInterface, OfferInterface } from '../../utils/types';
 import Offer from './Offer';
 import { StyledInfinityScroll } from './Offer.styled';
 
@@ -59,12 +59,14 @@ function OfferList({ link } : OffersListInterface) {
           title={offer.title}
           companyLogoUrl={offer.companyLogoUrl}
           companyName={offer.companyName}
-          city={offer.city}
-          remote={offer.remote}
+          addressData={offer.addressData}
+          remoteStatus={offer.remoteStatus}
           salary={offer.salary}
           tags={offer.tags}
           offerId={offer.offerId}
           date={offer.date}
+          approvalStatus={offer.approvalStatus}
+          archived={offer.archived}
         />
       ))}
     </StyledInfinityScroll>

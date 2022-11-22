@@ -5,7 +5,8 @@ import { IconButton, TextField } from '@mui/material';
 import axios from 'axios';
 import moment from 'moment';
 import React, { useState, useEffect } from 'react';
-import { getHeaders } from '../../constants';
+import { USER_ROLE_MAP } from '../../utils/constants';
+import { getHeaders } from '../../utils/helperFunctions';
 import AlertsComponent from '../AlertsComponent/AlertsComponent';
 import GlitchedButton from '../Buttons/GlitchedButton/GlitchedButton';
 import ListLogo from '../CompanyLogo/ListLogo';
@@ -53,7 +54,6 @@ const initialResponseState = {
 };
 
 function AccountSettings() {
-  const [editMode, setEditMode] = useState(false);
   const [file, setFile] = useState<any | null>(null);
   const [userState, setUserState] = useState(initialUserState);
   const [employeeState, setEmployeeState] = useState(initialEmployeeState);
@@ -63,10 +63,6 @@ function AccountSettings() {
 
   const handlePasswordsChange = (e : React.ChangeEvent<HTMLInputElement>) => {
     setPasswords({ ...passwords, [e.target.name]: e.target.value });
-  };
-
-  const handleEmployerChange = (e : React.ChangeEvent<HTMLInputElement>) => {
-    setEmployerState({ ...employerState, [e.target.name]: e.target.value });
   };
 
   const handleFileChange = (e : React.ChangeEvent<HTMLInputElement>) => {
@@ -82,23 +78,6 @@ function AccountSettings() {
 
   const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
-  };
-
-  const handleEditButton = () => {
-    setEditMode((current) => !current);
-  };
-
-  const handleSaveButton = () => {
-    const updatedData = userState.role === 'ROLE_EMPLOYEE' ? employeeState : employerState;
-    console.log(updatedData);
-    const headers = getHeaders();
-    axios.post(ACCOUNT_URL, updatedData, { headers }).then((response) => {
-      if (response.status === 200) {
-        console.log(response);
-      }
-    }).catch((error) => {
-      console.log(error);
-    });
   };
 
   const handleUploadButton = () => {
@@ -159,7 +138,7 @@ function AccountSettings() {
       <Title>Account main info</Title>
       <DetailRowContainer>
         <div>Role:</div>
-        <div>{userState.role}</div>
+        <div>{USER_ROLE_MAP.get(userState.role)}</div>
       </DetailRowContainer>
       <DetailRowContainer>
         <div>E-mail:</div>
@@ -202,16 +181,7 @@ function AccountSettings() {
         <div>{employerState.companySiteUrl}</div>
       </DetailRowContainer>
       <Title>Logo</Title>
-      {editMode ? (
-        <StyledTextField
-          value={employerState.companyLogoUrl}
-          name="companyLogoUrl"
-          onChange={handleEmployerChange}
-          variant="standard"
-        />
-      ) : (
-        <ListLogo logoSrc={employerState.companyLogoUrl} />
-      )}
+      <ListLogo logoSrc={employerState.companyLogoUrl} />
     </SubContainer>
   );
 
@@ -263,11 +233,10 @@ function AccountSettings() {
     <MainContainer>
       <BackgroundContainer>
         {userComponent}
-        {userState.role === 'ROLE_EMPLOYEE' ? employeeComponent : employerComponent}
-        <RowCenterContainer>
-          {userState.role === 'ROLE_EMPLOYER' && <GlitchedButton placeholder={editMode ? 'Cancel' : 'Edit'} onClick={handleEditButton} />}
-          {editMode && <GlitchedButton placeholder="Save" onClick={handleSaveButton} />}
-        </RowCenterContainer>
+        {{
+          ROLE_EMPLOYEE: employeeComponent,
+          ROLE_EMPLOYER: employerComponent,
+        }[userState.role]}
         {userState.role === 'ROLE_EMPLOYEE' && employeeCV}
         <SubContainer>
           <Title>Change password</Title>

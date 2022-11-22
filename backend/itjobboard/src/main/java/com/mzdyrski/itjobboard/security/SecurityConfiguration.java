@@ -1,6 +1,6 @@
 package com.mzdyrski.itjobboard.security;
 
-import com.mzdyrski.itjobboard.service.UserServiceImpl;
+import com.mzdyrski.itjobboard.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
@@ -18,7 +18,6 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static com.mzdyrski.itjobboard.constants.SecurityConstants.*;
-import static com.mzdyrski.itjobboard.enums.Role.ROLE_EMPLOYEE;
 
 @AllArgsConstructor
 @Configuration
@@ -26,7 +25,6 @@ import static com.mzdyrski.itjobboard.enums.Role.ROLE_EMPLOYEE;
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfiguration {
 
-    private static final String EMPLOYER_ROLE = "EMPLOYER_ROLE";
     private JwtAuthorizationFilter jwtAuthorizationFilter;
     private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -46,7 +44,7 @@ public class SecurityConfiguration {
 //    }
 
     @Bean
-    public AuthenticationManager authManager(HttpSecurity http, UserServiceImpl userService,
+    public AuthenticationManager authManager(HttpSecurity http, UserService userService,
                                              BCryptPasswordEncoder bCryptPasswordEncoder,
                                              AuthenticationEventPublisher authenticationEventPublisher) throws Exception {
         var builder = http.getSharedObject(AuthenticationManagerBuilder.class);

@@ -1,6 +1,6 @@
 import moment from 'moment';
 import {
-  DetailContainer, DetailSvg, DetailData, DetailDescription, MainContainer,
+  DetailContainer, DetailSvg, DetailData, DetailDescription, MainContainer2,
 } from './OfferTagline.styled';
 import { ReactComponent as Company } from '../../assets/company.svg';
 import { ReactComponent as People } from '../../assets/people.svg';
@@ -18,7 +18,7 @@ function OfferTagline2({
   companyName, companySize, experienceLevel, date,
 } : OfferTagline2Interface) {
   return (
-    <MainContainer>
+    <MainContainer2>
       <DetailContainer>
         <DetailSvg><Company /></DetailSvg>
         <DetailData>{companyName}</DetailData>
@@ -31,7 +31,9 @@ function OfferTagline2({
       </DetailContainer>
       <DetailContainer>
         <DetailSvg><ExpLvl /></DetailSvg>
-        <DetailData>{experienceLevel}</DetailData>
+        <DetailData>
+          {experienceLevel.charAt(0).toUpperCase() + experienceLevel.slice(1).toLowerCase()}
+        </DetailData>
         <DetailDescription>EXP. lvl</DetailDescription>
       </DetailContainer>
       <DetailContainer>
@@ -39,7 +41,7 @@ function OfferTagline2({
         <DetailData>{moment(new Date(date)).fromNow()}</DetailData>
         <DetailDescription>Added</DetailDescription>
       </DetailContainer>
-    </MainContainer>
+    </MainContainer2>
   );
 }
 

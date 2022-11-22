@@ -1,10 +1,13 @@
 package com.mzdyrski.itjobboard.dataTemplates;
 
+import com.mzdyrski.itjobboard.enums.ExperienceLevel;
+import com.mzdyrski.itjobboard.enums.RemoteState;
+
 public record OfferData(String title,
                         AddressData address,
-                        String remote,
+                        RemoteState remoteStatus,
                         ContractData[] contracts,
-                        String experienceLevel,
+                        ExperienceLevel experienceLevel,
                         SkillData[] techStack,
                         String description) {
 }

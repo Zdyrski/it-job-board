@@ -1,12 +1,11 @@
-package com.mzdyrski.itjobboard.listener;
+package com.mzdyrski.itjobboard.listeners;
 
 import com.mzdyrski.itjobboard.domain.UserSecurity;
-import com.mzdyrski.itjobboard.service.LoginAttemptService;
+import com.mzdyrski.itjobboard.services.LoginAttemptService;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.context.event.EventListener;
 import org.springframework.security.authentication.event.AbstractAuthenticationFailureEvent;
-import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.stereotype.Component;
 

@@ -13,8 +13,7 @@ public class SecurityConstants {
             "/user/login",
             "/offers",
             "/offers/{\\[0-9a-z]+}",
-            "/offers/tags/**",
-            "/offers/tags"
+            "/tags"
     };
     public static final String[] EMPLOYER_URLS = {"/offers/add"};
     public static final String[] ADMIN_URLS = {
@@ -24,5 +23,5 @@ public class SecurityConstants {
             "/user/admin/{\\[0-9a-z]+}"
     };
 
-    public static final String[] EMPLOYEE_URLS = {"/offers/{\\[0-9a-z]+}/application"};
+    public static final String[] EMPLOYEE_URLS = {"/application/{\\[0-9a-z]+}"};
 }

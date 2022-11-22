@@ -1,6 +1,7 @@
 package com.mzdyrski.itjobboard.services;
 
 import com.mzdyrski.itjobboard.dataTemplates.ChangePasswordData;
+import com.mzdyrski.itjobboard.dataTemplates.RegisterData;
 import com.mzdyrski.itjobboard.dataTemplates.UserStatusData;
 import com.mzdyrski.itjobboard.dataTemplates.UserUpdateData;
 import com.mzdyrski.itjobboard.domain.*;
@@ -33,7 +34,7 @@ import static com.mzdyrski.itjobboard.enums.Role.ROLE_EMPLOYER;
 
 @RequiredArgsConstructor
 @Service
-public class UserServiceImpl implements UserService, UserDetailsService {
+public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final ConfirmationTokenRepository tokenRepository;
@@ -51,21 +52,20 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         return new UserSecurity(user);
     }
 
-    @Override
-    public void register(String email, String password, String role, String siteUrl) throws UserExistsException, InvalidEmailException, BadRequestDataException, MessagingException {
-        validateNewEmail(email);
-        var user = getUserClass(role);
-        user.setEmail(email);
-        user.setPassword(encodedPassword(password));
-        user.setRole(Role.valueOf(role).name());
-        user.setAuthorities(Role.valueOf(role).getAuthorities());
+    public void register(RegisterData data, String siteUrl) throws UserExistsException, InvalidEmailException, BadRequestDataException, MessagingException {
+        validateNewEmail(data.email());
+        var user = getUserClass(data);
+        user.setEmail(data.email());
+        user.setPassword(encodedPassword(data.password()));
+        user.setRole(Role.valueOf(data.role()).name());
+        user.setAuthorities(Role.valueOf(data.role()).getAuthorities());
         user.setActive(false);
         user.setJoinDate(new Date());
         user.setLocked(false);
         userRepository.save(user);
         var confirmationToken = new ConfirmationToken(user.getId());
         tokenRepository.save(confirmationToken);
-        emailService.sendEmail(email, ACCOUNT_CREATED, siteUrl, confirmationToken.getToken());
+        emailService.sendEmail(data.email(), ACCOUNT_CREATED, siteUrl, confirmationToken.getToken());
     }
 
     public void activateUser(String token) {
@@ -76,12 +76,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         tokenRepository.delete(confirmationToken);
     }
 
-    @Override
     public User findUserByEmail(String email) {
         return userRepository.findUserByEmail(email);
     }
 
-    @Override
     public void updateUserInfo(User user, UserUpdateData data) {
         if (Objects.equals(user.getRole(), ROLE_EMPLOYEE.name())) {
             var employee = (Employee) user;
@@ -98,7 +96,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
-    @Override
     public void changePassword(String authorizationHeader, ChangePasswordData data) throws BadRequestDataException {
         var user = getUserFromTokenHeader(authorizationHeader);
         if (user != null) {
@@ -112,7 +109,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
-    @Override
     public void resetPassword(String email) {
         var user = findUserByEmail(email);
         var newPassword = RandomStringUtils.randomAlphanumeric(9);
@@ -122,7 +118,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         userRepository.save(user);
     }
 
-    @Override
     public void updateEmployeeCv(Employee employee, MultipartFile file) throws IOException {
         if (!Objects.equals(employee.getRole(), ROLE_EMPLOYEE.name())) {
             return;
@@ -161,13 +156,25 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         }
     }
 
-    private User getUserClass(String role) throws BadRequestDataException {
-        return switch (role) {
-            case "ROLE_EMPLOYEE" -> new Employee();
-            case "ROLE_EMPLOYER" -> new Employer();
-            case "ROLE_ADMIN" -> new User();
+    private User getUserClass(RegisterData data) throws BadRequestDataException {
+        switch (data.role()) {
+            case "ROLE_EMPLOYEE" -> {
+                var employee = new Employee();
+                employee.setFirstName(data.firstName());
+                employee.setLastName(data.lastName());
+                return employee;
+            }
+            case "ROLE_EMPLOYER" -> {
+                var employer = new Employer();
+                employer.setCompanyName(data.companyName());
+                employer.setCompanySize(data.companySize());
+                employer.setCompanySiteUrl(data.companySiteUrl());
+                employer.setCompanyLogoUrl(data.companyLogoUrl());
+                return employer;
+            }
+//          case "ROLE_ADMIN" -> new User();
             default -> throw new BadRequestDataException("Unsupported role");
-        };
+        }
     }
 
     private String encodedPassword(String password) {

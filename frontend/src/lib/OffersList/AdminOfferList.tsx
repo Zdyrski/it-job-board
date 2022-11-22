@@ -1,31 +1,29 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable max-len */
 import {
+  Alert,
+  AlertColor,
   AppBar,
   Button, Checkbox, FormControl, FormControlLabel, InputLabel, MenuItem, Radio, Select, SelectChangeEvent, Toolbar,
 } from '@mui/material';
 import axios from 'axios';
+import { off } from 'process';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { getHeaders } from '../../constants';
-import { AdminOfferInterface } from '../../types';
+import { APPROVAL_MAP } from '../../utils/constants';
+import { getHeaders } from '../../utils/helperFunctions';
+import { AdminOfferInterface } from '../../utils/types';
 import Offer from './Offer';
 import {
-  RowFlex, StyledInfinityScroll, StyledRadioGroup, AdminOfferMainContainer, SelectsDiv, ArchivedBar, ApprovalBar,
+  RowFlex, StyledInfinityScroll, StyledRadioGroup, AdminOfferMainContainer, SelectsDiv,
 } from './Offer.styled';
 
 const ADMIN_OFFERS_URL = 'http://localhost:8080/offers/admin';
 
 const initialOfferState = {
-  approvalState: 0,
+  approvalStatus: 0,
   archived: false,
 };
-
-const approvalBarMap = new Map([
-  [-1, 'disapproved'],
-  [0, 'notApproved'],
-  [1, 'approved'],
-]);
 
 function AdminOfferList() {
   const [offerId, setOfferId] = useState<string>('');
@@ -65,7 +63,7 @@ function AdminOfferList() {
 
   const handleOfferIdAndStatusChange = (e : React.ChangeEvent<HTMLInputElement>) => {
     setOfferId(e.target.value);
-    setOfferState({ ...offerState, approvalState: e.target.tabIndex, archived: e.target.required });
+    setOfferState({ ...offerState, approvalStatus: e.target.tabIndex, archived: e.target.required });
   };
 
   const handleOfferStateChange = (e : SelectChangeEvent<number>) => {
@@ -110,15 +108,15 @@ function AdminOfferList() {
                 title={offer.title}
                 companyLogoUrl={offer.companyLogoUrl}
                 companyName={offer.companyName}
-                city={offer.city}
-                remote={offer.remote}
+                addressData={offer.addressData}
+                remoteStatus={offer.remoteStatus}
                 salary={offer.salary}
                 tags={offer.tags}
                 offerId={offer.offerId}
                 date={offer.date}
+                approvalStatus={offer.approvalStatus}
+                archived={offer.archived}
               />
-              <ApprovalBar color="disapproved" />
-              <ArchivedBar color={offer.archived ? 'true' : 'false'} />
               <Radio value={offer.offerId} tabIndex={offer.approvalStatus} required={offer.archived} />
             </RowFlex>
           ))}
@@ -127,17 +125,17 @@ function AdminOfferList() {
       <AppBar position="sticky" color="primary" sx={{ top: 'auto', bottom: 0 }}>
         <Toolbar>
           <SelectsDiv>
-            <FormControl variant="standard" fullWidth>
-              <InputLabel>Approval state</InputLabel>
+            <FormControl variant="standard">
+              <InputLabel>Approval status</InputLabel>
               <Select
-                name="approvalState"
-                value={offerState.approvalState}
-                label="Approval state"
+                name="approvalStatus"
+                value={offerState.approvalStatus}
+                label="Approval status"
                 onChange={handleOfferStateChange}
               >
-                <MenuItem value={-1}>Disapproved</MenuItem>
-                <MenuItem value={0}>Not approved</MenuItem>
-                <MenuItem value={1}>Approved</MenuItem>
+                {APPROVAL_MAP.map((option) => (
+                  <MenuItem key={option.name} value={option.value}>{option.name}</MenuItem>
+                ))}
               </Select>
             </FormControl>
             <FormControlLabel control={<Checkbox checked={offerState.archived} onChange={handleArchived} />} label="Archived" />

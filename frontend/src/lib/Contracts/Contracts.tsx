@@ -1,5 +1,5 @@
 import React from 'react';
-import { ContractInterface } from '../../types';
+import { ContractInterface } from '../../utils/types';
 import { MainContainer, ContractContainer } from './Contracts.styled';
 
 interface ContractsInterface {
@@ -10,7 +10,7 @@ function Contracts({ data } : ContractsInterface) {
   return (
     <MainContainer>
       {data?.map((contract : ContractInterface) => (
-        !contract.salaryUndisclosed
+        contract.undisclosed
           ? (
             <ContractContainer key={contract.name}>
               {contract.name}

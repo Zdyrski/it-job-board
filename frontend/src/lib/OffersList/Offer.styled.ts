@@ -1,4 +1,4 @@
-import { RadioGroup } from '@mui/material';
+import { Alert, RadioGroup } from '@mui/material';
 import InfiniteScroll from 'react-infinite-scroller';
 import { styled } from '../stitches.config';
 
@@ -59,7 +59,7 @@ export const MainContainer = styled('div', {
   justifyContent: 'space-around',
   alignItems: 'center',
   width: '95%',
-  maxHeight: '7rem',
+  maxHeight: '8.5rem',
   backgroundColor: '$primaryColor',
   border: '0.2rem solid grey',
   borderRadius: '1rem',
@@ -99,6 +99,14 @@ export const ThirdRow = styled('div', {
   fontSize: '$text8',
 });
 
+export const FourthRow = styled('div', {
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'center',
+  alignItems: 'center',
+  width: '100%',
+});
+
 export const DateTag = styled('div', {
   border: '2px solid $backgroundColor',
   background: '$remoteBackgroundColor',
@@ -109,20 +117,28 @@ export const DateTag = styled('div', {
   padding: '0.1rem 0.6rem',
 });
 
-export const ColumnFlex = styled('div', {
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-});
-
 export const RowFlex = styled('div', {
   display: 'flex',
   flexDirection: 'row',
   justifyContent: 'space-between',
   alignItems: 'center',
-  height: '100%',
   width: '100%',
+});
+
+export const StyledAlert = styled(Alert, {
+  width: '95%',
+  '.MuiAlert-outlined': {
+    padding: '0',
+  },
+  '.MuiAlert-root': {
+    padding: '0',
+  },
+  '.MuiAlert-icon': {
+    padding: '0',
+  },
+  '.MuiAlert-message': {
+    padding: '0',
+  },
 });
 
 export const AdminOfferMainContainer = styled('div', {
@@ -144,39 +160,4 @@ export const SelectsDiv = styled('div', {
   justifyContent: 'space-between',
   alignItems: 'center',
   width: '70%',
-});
-
-export const ApprovalBar = styled('div', {
-  height: '3rem',
-  width: '0.5rem',
-  margin: '0.2rem',
-  variants: {
-    color: {
-      disapproved: {
-        backgroundColor: '$errorColor',
-      },
-      notApproved: {
-        backgroundColor: '$violetColor',
-      },
-      approved: {
-        backgroundColor: '$successColor',
-      },
-    },
-  },
-});
-
-export const ArchivedBar = styled('div', {
-  height: '3rem',
-  width: '0.5rem',
-  margin: '0.2rem',
-  variants: {
-    color: {
-      true: {
-        backgroundColor: '$successColor',
-      },
-      false: {
-        backgroundColor: '$errorColor',
-      },
-    },
-  },
 });

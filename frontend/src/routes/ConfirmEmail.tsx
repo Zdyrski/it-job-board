@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../lib/Navbar/Navbar';
-import { getHeaders } from '../constants';
 import AlertsComponent from '../lib/AlertsComponent/AlertsComponent';
 import GlitchedButton from '../lib/Buttons/GlitchedButton/GlitchedButton';
 import { FlexColumnCenterContainer } from '../lib/Containers/Containers.styled';
+import { getHeaders } from '../utils/helperFunctions';
 
 const CONFIRM_EMAIL_URL = 'http://localhost:8080/user/register/confirm';
 

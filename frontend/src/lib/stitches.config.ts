@@ -110,4 +110,8 @@ export const globalStyles = globalCss({
   '.MuiToolbar-root': {
     backgroundColor: '$primaryColor',
   },
+  '.MuiPaper': {
+    backgroundColor: '$violetColor',
+    color: '$violetColor',
+  },
 });

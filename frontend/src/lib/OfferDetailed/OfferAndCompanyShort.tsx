@@ -1,5 +1,5 @@
 import React from 'react';
-import { ContractInterface } from '../../types';
+import { OfferAndCompanyShortInterface } from '../../utils/types';
 import OfferLogo from '../CompanyLogo/OfferLogo';
 import Contracts from '../Contracts/Contracts';
 import LocationAndRemoteTags from '../OfferTagline/LocationAndRemoteTags';
@@ -8,19 +8,6 @@ import {
   DetailsContainer, LogoAndDetailsContainer, MainContainer, Title,
 } from './OfferAndCompanyShort.styled';
 
-interface OfferAndCompanyShortInterface {
-  title: string
-  companyName: string
-  companySize: number
-  companyLogoUrl: string
-  companySiteUrl: string
-  experienceLevel: string
-  city: string
-  remote: string
-  contracts: ContractInterface[]
-  date: string
-}
-
 function OfferAndCompanyShort({
   title,
   companyName,
@@ -28,8 +15,8 @@ function OfferAndCompanyShort({
   companyLogoUrl,
   companySiteUrl,
   experienceLevel,
-  city,
-  remote,
+  addressData,
+  remoteStatus,
   contracts,
   date,
 } : OfferAndCompanyShortInterface) {
@@ -40,7 +27,7 @@ function OfferAndCompanyShort({
         <DetailsContainer>
           <Title>{title}</Title>
           {companySiteUrl}
-          <LocationAndRemoteTags location={city} remote={remote} />
+          <LocationAndRemoteTags addressData={addressData} remoteStatus={remoteStatus} />
           <Contracts data={contracts} />
         </DetailsContainer>
       </LogoAndDetailsContainer>

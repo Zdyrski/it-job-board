@@ -3,9 +3,9 @@ import { styled } from '../stitches.config';
 export const PageContainer = styled('div', {
   display: 'flex',
   width: '100%',
-  height: '80vh',
+  height: '90vh',
   justifyContent: 'center',
-  alignItems: 'center',
+  alignItems: 'flex-start',
 });
 
 export const FormContainer = styled('div', {
@@ -17,4 +17,11 @@ export const FormContainer = styled('div', {
   padding: '2rem',
   border: '0.2rem solid $tertiaryColor',
   borderRadius: '0.5rem',
+});
+
+export const SubContainer = styled('div', {
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
 });

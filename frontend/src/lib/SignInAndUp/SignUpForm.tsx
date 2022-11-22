@@ -1,6 +1,7 @@
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import {
-  FormControlLabel, IconButton, Radio, RadioGroup,
+  Button,
+  FormControlLabel, IconButton, Radio, RadioGroup, Tooltip,
 } from '@mui/material';
 import React, { useState } from 'react';
 import axios from 'axios';
@@ -8,8 +9,13 @@ import { useNavigate } from 'react-router-dom';
 import FormButton from '../Buttons/FormButton/FormButton';
 import GlitchedButton from '../Buttons/GlitchedButton/GlitchedButton';
 import { StyledTextField } from '../Inputs/Inputs.styled';
-import { FormContainer, PageContainer } from './SignInAndUp.styled';
+import { FormContainer, PageContainer, SubContainer } from './SignInAndUp.styled';
 import AlertsComponent from '../AlertsComponent/AlertsComponent';
+import UpdateableLogo from '../CompanyLogo/UpdateableLogo';
+import {
+  REGEX_COMPANY_LOGO_URL, REGEX_COMPANY_NAME, REGEX_COMPANY_SITE_URL,
+  REGEX_EMAIL, REGEX_NAME, REGEX_PASSWORD,
+} from '../../utils/constants';
 
 const SIGN_UP_URL = 'http://localhost:8080/user/register';
 
@@ -18,7 +24,25 @@ const initialState = {
   password1: '',
   password2: '',
   role: 'ROLE_EMPLOYEE',
+  firstName: '',
+  lastName: '',
+  companyName: '',
+  companySiteUrl: '',
+  companySize: 0,
+  companyLogoUrl: '',
   showPassword: false,
+};
+
+const initialErrorsState = {
+  email: false,
+  password1: false,
+  password2: false,
+  firstName: false,
+  lastName: false,
+  companyName: false,
+  companySiteUrl: false,
+  companySize: false,
+  companyLogoUrl: false,
 };
 
 const initialResponseState = {
@@ -31,6 +55,8 @@ const initialResponseState = {
 function SignUpForm() {
   // TODO validation
   const [state, setState] = useState(initialState);
+  const [errorsState, setErrorsState] = useState(initialErrorsState);
+  const [logoSrc, setLogoSrc] = useState('');
   const [responseState, setResponseState] = useState(initialResponseState);
   const navigate = useNavigate();
 
@@ -66,10 +92,99 @@ function SignUpForm() {
     });
   };
 
+  const validateData = () => {
+    if (state.role === 'ROLE_EMPLOYEE') {
+      if (!REGEX_NAME.test(state.firstName)) {
+        setErrorsState((prev) => ({ ...prev, firstName: true }));
+      } else {
+        setErrorsState((prev) => ({ ...prev, firstName: false }));
+      }
+      if (!REGEX_NAME.test(state.lastName)) {
+        setErrorsState((prev) => ({ ...prev, lastName: true }));
+      } else {
+        setErrorsState((prev) => ({ ...prev, lastName: false }));
+      }
+    } else if (state.role === 'ROLE_EMPLOYER') {
+      if (!REGEX_COMPANY_NAME.test(state.companyName)) {
+        setErrorsState((prev) => ({ ...prev, companyName: true }));
+      } else {
+        setErrorsState((prev) => ({ ...prev, companyName: false }));
+      }
+      if (!REGEX_COMPANY_SITE_URL.test(state.companySiteUrl)) {
+        setErrorsState((prev) => ({ ...prev, companySiteUrl: true }));
+      } else {
+        setErrorsState((prev) => ({ ...prev, companySiteUrl: false }));
+      }
+      if (state.companySize > 0 && state.companySize < 100000000) {
+        setErrorsState((prev) => ({ ...prev, companySize: true }));
+      } else {
+        setErrorsState((prev) => ({ ...prev, companySize: false }));
+      }
+      if (!REGEX_COMPANY_LOGO_URL.test(state.companyLogoUrl)) {
+        setErrorsState((prev) => ({ ...prev, companyLogoUrl: true }));
+      } else {
+        setErrorsState((prev) => ({ ...prev, companyLogoUrl: false }));
+      }
+    }
+    if (!REGEX_EMAIL.test(state.email)) {
+      setErrorsState((prev) => ({ ...prev, email: true }));
+    } else {
+      setErrorsState((prev) => ({ ...prev, email: false }));
+    }
+    if (!REGEX_PASSWORD.test(state.password1) || !REGEX_PASSWORD.test(state.password2)) {
+      setErrorsState((prev) => ({ ...prev, password1: true, password2: true }));
+    } else {
+      setErrorsState((prev) => ({ ...prev, password1: false, password2: false }));
+    }
+    if (state.password1 !== state.password2) {
+      setErrorsState((prev) => ({ ...prev, password1: true, password2: true }));
+    } else {
+      setErrorsState((prev) => ({ ...prev, password1: false, password2: false }));
+    }
+    console.log(errorsState);
+    if (errorsState === initialErrorsState) {
+      return true;
+    }
+    return false;
+  };
+
+  const getSignUpData = () => {
+    switch (state.role) {
+      case 'ROLE_EMPLOYEE':
+        return {
+          email: state.email,
+          password: state.password1,
+          role: state.role,
+          firstName: state.firstName,
+          lastName: state.lastName,
+        };
+      case 'ROLE_EMPLOYER':
+        return {
+          email: state.email,
+          password: state.password1,
+          role: state.role,
+          companyName: state.companyName,
+          companySiteUrl: state.companySiteUrl,
+          companySize: state.companySize,
+          companyLogoUrl: state.companyLogoUrl,
+        };
+      default:
+        return null;
+    }
+  };
+
   const handleSignUp = () => {
-    const signUpData = { email: state.email, password: state.password1, role: state.role };
+    console.log(validateData());
+    if (!validateData()) {
+      return;
+    }
+    const signUpData = getSignUpData();
+    console.log(signUpData);
+    if (signUpData === null) {
+      return;
+    }
     axios.post(SIGN_UP_URL, signUpData).then((response) => {
-      if (response.status === 200) {
+      if (response.status === 201) {
         console.log(response);
         setSuccessAlert();
         setState(initialState);
@@ -81,6 +196,78 @@ function SignUpForm() {
     });
   };
 
+  const employeeInputs = (
+    <SubContainer>
+      <StyledTextField
+        name="firstName"
+        autoComplete="off"
+        error={errorsState.firstName}
+        value={state.firstName}
+        onChange={handleChange}
+        label="First name *"
+        variant="standard"
+      />
+      <StyledTextField
+        name="lastName"
+        autoComplete="off"
+        error={errorsState.lastName}
+        value={state.lastName}
+        onChange={handleChange}
+        label="Last name *"
+        variant="standard"
+      />
+    </SubContainer>
+  );
+
+  const employerInputs = (
+    <SubContainer>
+      <StyledTextField
+        name="companyName"
+        autoComplete="off"
+        error={errorsState.companyName}
+        value={state.companyName}
+        onChange={handleChange}
+        label="Company name *"
+        variant="standard"
+      />
+      <Tooltip title="Your Site URL should begin with http(s)">
+        <StyledTextField
+          name="companySiteUrl"
+          autoComplete="off"
+          error={errorsState.companySiteUrl}
+          value={state.companySiteUrl}
+          onChange={handleChange}
+          label="Company site URL *"
+          variant="standard"
+        />
+      </Tooltip>
+      <StyledTextField
+        name="companySize"
+        autoComplete="off"
+        error={errorsState.companySize}
+        value={state.companySize}
+        type="number"
+        onChange={handleChange}
+        label="Company size *"
+        variant="standard"
+      />
+      <Tooltip title="Your Logo URL should begin with http(s) and end with .jpg/jpeg/png/svg">
+        <StyledTextField
+          name="companyLogoUrl"
+          autoComplete="off"
+          error={errorsState.companyLogoUrl}
+          value={state.companyLogoUrl}
+          onChange={handleChange}
+          helperText="(Preferably 1:1 ratio)"
+          label="Company logo URL *"
+          variant="standard"
+        />
+      </Tooltip>
+      <Button type="button" onClick={() => setLogoSrc(state.companyLogoUrl)}>Test Logo</Button>
+      <UpdateableLogo src={logoSrc} setSrc={setLogoSrc} />
+    </SubContainer>
+  );
+
   return (
     <PageContainer>
       <FormContainer>
@@ -90,9 +277,41 @@ function SignUpForm() {
           errorMessage={responseState.errorMessage}
           successMessage={responseState.successMessage}
         />
-        <StyledTextField name="email" value={state.email} onChange={handleChange} label="E-mail" variant="standard" />
-        <StyledTextField name="password1" value={state.password1} onChange={handleChange} type={state.showPassword ? 'text' : 'password'} label="Password" variant="standard" />
-        <StyledTextField name="password2" value={state.password2} onChange={handleChange} type={state.showPassword ? 'text' : 'password'} label="Repeat password" variant="standard" />
+        {{
+          ROLE_EMPLOYEE: employeeInputs,
+          ROLE_EMPLOYER: employerInputs,
+        }[state.role]}
+        <StyledTextField
+          name="email"
+          autoComplete="off"
+          error={errorsState.email}
+          value={state.email}
+          onChange={handleChange}
+          label="E-mail *"
+          variant="standard"
+        />
+        <Tooltip title="Min 8 characters: at least one BIG letter, one small, one digit.">
+          <StyledTextField
+            name="password1"
+            error={errorsState.password1}
+            value={state.password1}
+            onChange={handleChange}
+            type={state.showPassword ? 'text' : 'password'}
+            label="Password *"
+            variant="standard"
+          />
+        </Tooltip>
+        <Tooltip title="Min 8 characters: at least one BIG letter, one small, one digit.">
+          <StyledTextField
+            name="password2"
+            error={errorsState.password2}
+            value={state.password2}
+            onChange={handleChange}
+            type={state.showPassword ? 'text' : 'password'}
+            label="Repeat password *"
+            variant="standard"
+          />
+        </Tooltip>
         <RadioGroup name="role" value={state.role} onChange={handleChange}>
           <FormControlLabel value="ROLE_EMPLOYEE" control={<Radio />} label="Employee" />
           <FormControlLabel value="ROLE_EMPLOYER" control={<Radio />} label="Employer" />

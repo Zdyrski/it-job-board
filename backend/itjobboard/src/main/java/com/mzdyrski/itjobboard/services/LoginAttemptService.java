@@ -1,4 +1,4 @@
-package com.mzdyrski.itjobboard.service;
+package com.mzdyrski.itjobboard.services;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;

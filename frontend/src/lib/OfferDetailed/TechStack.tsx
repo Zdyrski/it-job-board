@@ -1,5 +1,5 @@
 import React from 'react';
-import { SkillInterface } from '../../types';
+import { SkillInterface } from '../../utils/types';
 import {
   LevelDot, LevelDotsContainer, MainContainer, SkillsContainer,
   SkillContainer, SkillName, SkillLevel, Title,

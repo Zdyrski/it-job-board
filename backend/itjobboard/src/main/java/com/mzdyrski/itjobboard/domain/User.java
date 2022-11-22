@@ -23,5 +23,4 @@ public class User {
     private Date joinDate;
     private boolean active;
     private boolean locked;
-
 }

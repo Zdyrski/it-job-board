@@ -1,3 +1,4 @@
+import { Alert } from '@mui/material';
 import { styled } from '../stitches.config';
 
 export const ListContainer = styled('div', {
@@ -13,10 +14,14 @@ export const ListContainer = styled('div', {
 export const MainContainer = styled('div', {
   display: 'flex',
   flexDirection: 'column',
-  justifyContent: 'center',
+  justifyContent: 'start',
   alignItems: 'center',
-  width: '95%',
+  width: '100%',
   height: '100%',
   backgroundColor: '$primaryColor',
   margin: '0.2rem',
+});
+
+export const ApplyAlert = styled(Alert, {
+  margin: '1rem',
 });
