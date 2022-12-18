@@ -4,8 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.mzdyrski.itjobboard.domain.User;
-import com.mzdyrski.itjobboard.domain.UserSecurity;
+import com.mzdyrski.itjobboard.user.UserSecurity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,7 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static com.auth0.jwt.algorithms.Algorithm.HMAC512;
-import static com.mzdyrski.itjobboard.constants.SecurityConstants.*;
+import static com.mzdyrski.itjobboard.security.SecurityConstants.*;
 import static java.util.Arrays.stream;
 
 @Component

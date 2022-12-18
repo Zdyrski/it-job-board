@@ -1,14 +1,13 @@
 package com.mzdyrski.itjobboard;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.mzdyrski.itjobboard.controllers.UserController;
-import com.mzdyrski.itjobboard.dataTemplates.AddressData;
-import com.mzdyrski.itjobboard.dataTemplates.ContractData;
-import com.mzdyrski.itjobboard.dataTemplates.SkillData;
-import com.mzdyrski.itjobboard.domain.*;
+import com.mzdyrski.itjobboard.offer.Offer;
+import com.mzdyrski.itjobboard.user.*;
+import com.mzdyrski.itjobboard.offer.dto.AddressData;
+import com.mzdyrski.itjobboard.offer.dto.ContractData;
+import com.mzdyrski.itjobboard.offer.dto.SkillData;
 import com.mzdyrski.itjobboard.security.JWTTokenProvider;
-import com.mzdyrski.itjobboard.services.EmailService;
-import com.mzdyrski.itjobboard.services.UserService;
+import com.mzdyrski.itjobboard.email.EmailService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
@@ -24,10 +23,10 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.util.Date;
 
-import static com.mzdyrski.itjobboard.enums.ApprovalState.APPROVED;
-import static com.mzdyrski.itjobboard.enums.ExperienceLevel.MEDIUM;
-import static com.mzdyrski.itjobboard.enums.RemoteState.FULL_TIME;
-import static com.mzdyrski.itjobboard.enums.Role.*;
+import static com.mzdyrski.itjobboard.offer.ApprovalState.APPROVED;
+import static com.mzdyrski.itjobboard.offer.ExperienceLevel.MEDIUM;
+import static com.mzdyrski.itjobboard.offer.RemoteState.FULL_TIME;
+import static com.mzdyrski.itjobboard.user.Role.*;
 
 @ActiveProfiles("test")
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

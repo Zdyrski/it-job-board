@@ -1,6 +1,6 @@
 package com.mzdyrski.itjobboard.security;
 
-import com.mzdyrski.itjobboard.services.UserService;
+import com.mzdyrski.itjobboard.user.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
@@ -17,7 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.mzdyrski.itjobboard.constants.SecurityConstants.*;
+import static com.mzdyrski.itjobboard.security.SecurityConstants.*;
 
 @AllArgsConstructor
 @Configuration

@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-import static com.mzdyrski.itjobboard.constants.SecurityConstants.OPTIONS_HTTP_METHOD;
-import static com.mzdyrski.itjobboard.constants.SecurityConstants.TOKEN_HEADER;
+import static com.mzdyrski.itjobboard.security.SecurityConstants.OPTIONS_HTTP_METHOD;
+import static com.mzdyrski.itjobboard.security.SecurityConstants.TOKEN_HEADER;
 import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.HttpStatus.*;
 

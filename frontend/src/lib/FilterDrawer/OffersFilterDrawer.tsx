@@ -13,7 +13,7 @@ import { FilterDrawerInterface } from '../../utils/types';
 import { hasAuthority } from '../../utils/helperFunctions';
 import { APPROVAL_MAP, FILTER_MAP } from '../../utils/constants';
 
-const TAGS_URL = 'http://localhost:8080/tags';
+const TAGS_URL = 'http://localhost:8080/tag';
 
 const initialKeywords = {
   title: '',
