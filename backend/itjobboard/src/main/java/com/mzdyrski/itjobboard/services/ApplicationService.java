@@ -26,7 +26,7 @@ public class ApplicationService {
     public ApplyState checkIfCanApply(User user, String offerId) {
         if (Objects.equals(user.getRole(), ROLE_EMPLOYEE.name())) {
             var app = applicationRepository.findApplicationByOfferIdAndUserId(offerId, user.getId());
-            var cv = cvRepository.findByEmployeeId(user.getId());
+            var cv = cvRepository.findFirstByEmployeeId(user.getId());
             if (cv == null) {
                 return NO_CV;
             }else if (app == null) {
@@ -55,7 +55,7 @@ public class ApplicationService {
     private void sendEmailsAfterApplying(User employee, String offerId) throws MessagingException {
         var offer = offerRepository.findById(offerId).orElseThrow();
         var employer = (Employer) userRepository.findById(offer.getEmployerId()).orElseThrow();
-        var cv = cvRepository.findByEmployeeId(employee.getId());
+        var cv = cvRepository.findFirstByEmployeeId(employee.getId());
         emailService.sendEmail(employee.getEmail(), APPLIED_EMPLOYEE, offer.getTitle(), employer.getCompanyName());
         emailService.sendEmailWithCV(employer.getEmail(), APPLIED_EMPLOYER, cv, offer.getTitle());
     }

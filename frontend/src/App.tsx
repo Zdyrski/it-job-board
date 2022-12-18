@@ -1,18 +1,20 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
+import { lazy } from 'react';
 import { globalStyles } from './lib/stitches.config';
-import Account from './routes/Account';
-import AddOffer from './routes/AddOffer';
-import Main from './routes/Main';
-import Offer from './routes/Offer';
-import UserOffers from './routes/UserOffers';
-import SignIn from './routes/SignIn';
-import SignUp from './routes/SignUp';
 import Test from './routes/Test';
 import ProtectedRoutes from './routes/ProtectedRoutes';
-import AdminOffers from './routes/AdminOffers';
-import AdminUsers from './routes/AdminUsers';
-import ConfirmEmail from './routes/ConfirmEmail';
+
+const Account = lazy(() => import('./routes/Account'));
+const AddOffer = lazy(() => import('./routes/AddOffer'));
+const Offer = lazy(() => import('./routes/Offer'));
+const UserOffers = lazy(() => import('./routes/UserOffers'));
+const SignIn = lazy(() => import('./routes/SignIn'));
+const SignUp = lazy(() => import('./routes/SignUp'));
+const AdminOffers = lazy(() => import('./routes/AdminOffers'));
+const AdminUsers = lazy(() => import('./routes/AdminUsers'));
+const Main = lazy(() => import('./routes/Main'));
+const ConfirmEmail = lazy(() => import('./routes/ConfirmEmail'));
 
 function App() {
   globalStyles();

@@ -124,7 +124,7 @@ public class UserService implements UserDetailsService {
         }
         var cv = new EmployeesCv();
         cv.setEmployeeId(employee.getId());
-        cv.setFilename(file.getOriginalFilename());
+        cv.setFileName(file.getOriginalFilename());
         cv.setFileType(file.getContentType());
         cv.setFileSize(file.getSize());
         cv.setFile(new Binary(file.getBytes()));

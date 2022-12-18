@@ -79,7 +79,7 @@ public class EmailService {
             var attachmentPart = new MimeBodyPart();
             var bds = new ByteArrayDataSource(cv.getFile().getData(), cv.getFileType());
             attachmentPart.setDataHandler(new DataHandler(bds));
-            attachmentPart.setFileName(cv.getFilename());
+            attachmentPart.setFileName(cv.getFileName());
             var multiPart = new MimeMultipart();
             multiPart.addBodyPart(messageBodyPart);
             multiPart.addBodyPart(attachmentPart);

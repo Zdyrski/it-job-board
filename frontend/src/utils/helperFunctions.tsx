@@ -5,7 +5,8 @@ export const getHeaders = () => {
   const result = {
     'Content-Type': 'application/json',
   };
-  if (localStorage.getItem('jwt-token') !== null) {
+  if (token !== null) {
+    console.log(jwtDecode(token));
     (result as any).Authorization = `Bearer ${token}`;
   }
   return result;

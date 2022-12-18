@@ -23,8 +23,8 @@ export const MainContainer3 = styled('div', {
 });
 
 export const ListImg = styled('img', {
-  height: '100%',
-  width: '100%',
+  height: 'auto',
+  width: 'auto',
   maxHeight: '6rem',
   maxWidth: '100%',
   overflow: 'hidden',

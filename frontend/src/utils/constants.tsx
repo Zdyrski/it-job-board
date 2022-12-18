@@ -32,7 +32,7 @@ export const USER_ROLE_MAP = new Map([
 
 export const FILTER_MAP = new Map([
   ['no', 'NO'],
-  ['partial', 'PARIAL'],
+  ['partial', 'PARTIAL'],
   ['fullTime', 'FULL_TIME'],
   ['employment', 'employment'],
   ['mandate', 'mandate'],

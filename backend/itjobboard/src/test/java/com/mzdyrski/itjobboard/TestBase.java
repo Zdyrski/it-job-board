@@ -90,6 +90,7 @@ public class TestBase {
         mongoTemplate.dropCollection("users");
         mongoTemplate.dropCollection("offers");
         mongoTemplate.dropCollection("applications");
+        mongoTemplate.dropCollection("employees_cvs");
     }
 
     @BeforeEach
@@ -107,6 +108,7 @@ public class TestBase {
 
     protected void saveEmployeeToDb() {
         var employee = new Employee();
+        employee.setId("employeeId");
         employee.setEmail("employee");
         employee.setPassword(getEncryptedPassword());
         employee.setRole(ROLE_EMPLOYEE.name());
@@ -165,7 +167,7 @@ public class TestBase {
         offer.setSalaryShort("salaryShort");
         offer.setExperienceLevel(MEDIUM.value);
         offer.setTechStack(new SkillData[]{new SkillData("Java", 5), new SkillData("React", 5)});
-        offer.setTags(new String[]{"tag1", "tag2"});
+        offer.setTags(new String[]{"Java"});
         offer.setDate(new Date());
         offer.setDescription("description");
         offer.setApprovalStatus(APPROVED.value);

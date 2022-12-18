@@ -35,14 +35,6 @@ public class SecurityConfiguration {
         return new DefaultAuthenticationEventPublisher(applicationEventPublisher);
     }
 
-//    @Bean
-//    public AuthenticationManager authManager(UserServiceImpl userService, BCryptPasswordEncoder bCryptPasswordEncoder) {
-//        DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
-//        provider.setUserDetailsService(userService);
-//        provider.setPasswordEncoder(bCryptPasswordEncoder);
-//        return provider::authenticate;
-//    }
-
     @Bean
     public AuthenticationManager authManager(HttpSecurity http, UserService userService,
                                              BCryptPasswordEncoder bCryptPasswordEncoder,

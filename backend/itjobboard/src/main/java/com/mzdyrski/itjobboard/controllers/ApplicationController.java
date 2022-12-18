@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import javax.mail.MessagingException;
-import java.io.IOException;
 
 import static com.mzdyrski.itjobboard.enums.ApplyState.APPLIED;
 import static org.springframework.http.HttpStatus.OK;

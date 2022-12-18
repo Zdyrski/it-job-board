@@ -105,10 +105,11 @@ public class OfferController {
     @GetMapping("/my-offers")
     public Mono<ResponseEntity> getMyOffers(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) throws BadRequestDataException {
         var user = userService.getUserFromTokenHeader(authorizationHeader);
-        if(Objects.equals(user.getRole(), ROLE_EMPLOYER.name())){
+        if (Objects.equals(user.getRole(), ROLE_EMPLOYER.name())) {
             var userOffersList = offerService.getOffersByEmployer(user);
             return Mono.just(new ResponseEntity<>(userOffersList, OK));
-        }else if(Objects.equals(user.getRole(), ROLE_EMPLOYEE.name())){
+        } else if (Objects.equals(user.getRole(), ROLE_EMPLOYEE.name())) {
+            System.out.println("1");
             var userOffersList = offerService.getOffersByEmployee(user);
             return Mono.just(new ResponseEntity<>(userOffersList, OK));
         }
@@ -161,7 +162,7 @@ public class OfferController {
     }
 
     @PostMapping("/admin/{id}")
-    public Mono<ResponseEntity> approveOffer(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @PathVariable String id, @RequestBody OfferStatusData data) {
+    public Mono<ResponseEntity> approveOffer(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @PathVariable String id, @RequestBody OfferStatusData data) throws MessagingException {
         var admin = userService.getUserFromTokenHeader(authorizationHeader);
         offerService.setOfferStatus(admin, id, data);
         return Mono.just(new ResponseEntity<>(OK));

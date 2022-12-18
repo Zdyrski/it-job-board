@@ -69,7 +69,7 @@ public class UserController {
     @GetMapping("/account")
     public Mono<ResponseEntity<User>> account(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
         var user = userService.getUserFromTokenHeader(authorizationHeader);
-
+        // TODO
         user.setPassword("XD");
         return Mono.just(new ResponseEntity<>(user, OK));
     }

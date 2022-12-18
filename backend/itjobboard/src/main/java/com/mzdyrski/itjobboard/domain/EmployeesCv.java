@@ -13,7 +13,7 @@ public class EmployeesCv {
     @Id
     private String id;
     private String employeeId;
-    private String filename;
+    private String fileName;
     private String fileType;
     private Long fileSize;
     private Binary file;

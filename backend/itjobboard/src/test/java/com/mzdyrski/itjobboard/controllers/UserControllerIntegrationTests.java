@@ -3,7 +3,9 @@ package com.mzdyrski.itjobboard.controllers;
 import com.mzdyrski.itjobboard.TestBase;
 import com.mzdyrski.itjobboard.dataTemplates.LoginData;
 import com.mzdyrski.itjobboard.dataTemplates.RegisterData;
+import com.mzdyrski.itjobboard.domain.ConfirmationToken;
 import com.mzdyrski.itjobboard.domain.Employee;
+import com.mzdyrski.itjobboard.domain.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -29,8 +31,33 @@ class UserControllerIntegrationTests extends TestBase {
                 .body(BodyInserters.fromValue(givenRegisterData))
                 .exchange()
                 .expectStatus().isCreated();
-        assertThat(mongoTemplate.find(new Query(new Criteria("email").is(givenEmail)),
-                Employee.class, "users")).extracting("email").containsOnly(givenEmail);
+        assertThat(getUserInDb(givenEmail)).extracting("email").isEqualTo(givenEmail);
+    }
+
+    @Test
+    public void registerAndConfirmationTokenTest() {
+        // given
+        var givenEmail = "employee2";
+        var givenRole = "ROLE_EMPLOYEE";
+        var givenRegisterData = getUser(givenEmail, givenRole);
+
+        // when
+        webTestClient.post()
+                .uri("/user/register")
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(BodyInserters.fromValue(givenRegisterData))
+                .exchange()
+                .expectStatus().isCreated();
+        var registeredUser = getUserInDb(givenEmail);
+        assertThat(registeredUser).extracting("active").isEqualTo(false);
+        var token = getConfirmationToken(registeredUser.getId()).getToken();
+
+        // then
+        webTestClient.get()
+                .uri("/user/register/confirm?token=" + token)
+                .exchange()
+                .expectStatus().isOk();
+        assertThat(getUserInDb(givenEmail)).extracting("active").isEqualTo(true);
     }
 
     @Test
@@ -47,8 +74,7 @@ class UserControllerIntegrationTests extends TestBase {
                 .body(BodyInserters.fromValue(givenRegisterData))
                 .exchange()
                 .expectStatus().isCreated();
-        assertThat(mongoTemplate.find(new Query(new Criteria("email").is(givenEmail)),
-                Employee.class, "users")).extracting("email").containsOnly(givenEmail);
+        assertThat(getUserInDb(givenEmail)).extracting("email").isEqualTo(givenEmail);
     }
 
     @Test
@@ -59,8 +85,7 @@ class UserControllerIntegrationTests extends TestBase {
         var givenRegisterData = getUser(givenEmail, givenRole);
 
         // when, then
-        assertThat(mongoTemplate.find(new Query(new Criteria("email").is(givenEmail)),
-                Employee.class, "users")).extracting("email").containsOnly(givenEmail);
+        assertThat(getUserInDb(givenEmail)).extracting("email").isEqualTo(givenEmail);
         webTestClient.post()
                 .uri("/user/register")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -100,6 +125,14 @@ class UserControllerIntegrationTests extends TestBase {
                 .body(BodyInserters.fromValue(givenLoginData))
                 .exchange()
                 .expectStatus().isBadRequest();
+    }
+
+    private User getUserInDb(String givenEmail) {
+        return mongoTemplate.findOne(new Query(new Criteria("email").is(givenEmail)), Employee.class, "users");
+    }
+
+    private ConfirmationToken getConfirmationToken(String userId) {
+        return mongoTemplate.findOne(new Query(new Criteria("userId").is(userId)), ConfirmationToken.class, "confirmation_tokens");
     }
 
     private RegisterData getUser(String email, String role) {

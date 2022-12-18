@@ -16,6 +16,7 @@ import java.util.*;
 import static com.mzdyrski.itjobboard.enums.ApprovalState.APPROVED;
 import static com.mzdyrski.itjobboard.enums.ApprovalState.NOT_APPROVED;
 import static com.mzdyrski.itjobboard.enums.EmailType.OFFER_ADDED;
+import static com.mzdyrski.itjobboard.enums.EmailType.OFFER_APPROVED;
 import static com.mzdyrski.itjobboard.enums.Role.*;
 
 @RequiredArgsConstructor
@@ -69,6 +70,7 @@ public class OfferService {
         for (Offer offer : offers) {
             result.add(getListElWithStatusForGivenOffer(offer));
         }
+
         return result;
     }
 
@@ -113,13 +115,15 @@ public class OfferService {
         emailService.sendEmail(employer.getEmail(), OFFER_ADDED, "url");
     }
 
-    public void setOfferStatus(User admin, String offerId, OfferStatusData data) {
+    public void setOfferStatus(User admin, String offerId, OfferStatusData data) throws MessagingException {
         if (!Objects.equals(admin.getRole(), ROLE_ADMIN.name())) {
             return;
         }
         var offer = offerRepository.findById(offerId).orElseThrow();
+        var employer = userRepository.findById(offer.getEmployerId()).orElseThrow();
         offer.setApprovalStatus(data.approvalStatus());
         offer.setArchived(data.archived());
+        emailService.sendEmail(employer.getEmail(), OFFER_APPROVED);
         offerRepository.save(offer);
     }
 

@@ -21,7 +21,6 @@ const filtersList = [
 ];
 
 function FilterBar() {
-  // TODO quickfilters navigation and filtrt
   const [drawerOpen, setDrawerOpen] = useState(false);
   const navigate = useNavigate();
 
@@ -31,9 +30,8 @@ function FilterBar() {
 
   return (
     <MainContainer>
-      <Button type="button" onClick={handleOpeningDrawer}>More Filters</Button>
+      <Button type="button" onClick={handleOpeningDrawer}>Filters</Button>
       <OffersFilterDrawer open={drawerOpen} handleOpen={handleOpeningDrawer} />
-      <div>QuickFilters:</div>
       {filtersList.map((filter) => (
         <IconAndText key={filter.name} onClick={() => navigate(`/?skill=${filter.name}`)}>
           <Icon>{filter.icon}</Icon>
