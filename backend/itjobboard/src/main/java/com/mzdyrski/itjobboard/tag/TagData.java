@@ -1,4 +1,6 @@
 package com.mzdyrski.itjobboard.tag;
 
-public record TagData(String name) {
+import javax.validation.constraints.NotBlank;
+
+public record TagData(@NotBlank String name) {
 }

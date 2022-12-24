@@ -1,9 +1,9 @@
 package com.mzdyrski.itjobboard.offer;
 
-import com.mzdyrski.itjobboard.offer.dto.*;
-import com.mzdyrski.itjobboard.user.User;
 import com.mzdyrski.itjobboard.exception.BadRequestDataException;
 import com.mzdyrski.itjobboard.exception.OfferNotAvailableException;
+import com.mzdyrski.itjobboard.offer.dto.*;
+import com.mzdyrski.itjobboard.user.User;
 import com.mzdyrski.itjobboard.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -11,10 +11,12 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
 import javax.mail.MessagingException;
+import javax.validation.Valid;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -28,6 +30,7 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
+@Validated
 @RequiredArgsConstructor
 @Service
 @RestController
@@ -61,7 +64,7 @@ public class OfferController {
 
         var skipAgg = (page.isPresent() && limit.isPresent()) ? skip(page.get() * limit.get()) : skip0;
         var limitAgg = limit.isPresent() ? limit(limit.get()) : skip0;
-        var sortCriteria = sort(Sort.Direction.DESC, "date");
+        var sortCriteria = sort(Sort.Direction.DESC, "date").and(Sort.Direction.DESC, "title");
 
         var aggregation = newAggregation(
                 approvalStatusAgg,
@@ -81,7 +84,7 @@ public class OfferController {
     }
 
     @PostMapping("")
-    public Mono<ResponseEntity<Offer>> addOffer(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @RequestBody OfferData data) throws MessagingException {
+    public Mono<ResponseEntity<Offer>> addOffer(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @Valid @RequestBody OfferData data) throws MessagingException {
         System.out.println("xd");
         var employer = userService.getUserFromTokenHeader(authorizationHeader);
         offerService.addOffer(employer, data);
@@ -112,6 +115,12 @@ public class OfferController {
         throw new BadRequestDataException("Wrong role");
     }
 
+    @PutMapping("/{id}")
+    public Mono<ResponseEntity> archiveOffer(@PathVariable String id){
+        offerService.archiveOffer(id);
+        return Mono.just(new ResponseEntity<>(id, OK));
+    }
+
     @GetMapping("/admin")
     public Mono<ResponseEntity<List<ListElWithStatusOfferData>>> getAdminOffers(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
                                                                                 @RequestParam Optional<String> title,
@@ -138,7 +147,7 @@ public class OfferController {
 
         var skipAgg = (page.isPresent() && limit.isPresent()) ? skip(page.get() * limit.get()) : skip0;
         var limitAgg = limit.isPresent() ? limit(limit.get()) : skip0;
-        var sortCriteria = sort(Sort.Direction.DESC, "date");
+        var sortCriteria = sort(Sort.Direction.DESC, "date").and(Sort.Direction.DESC, "title");
 
         var aggregation = newAggregation(
                 approvalStatusAgg,
@@ -158,7 +167,7 @@ public class OfferController {
     }
 
     @PostMapping("/admin/{id}")
-    public Mono<ResponseEntity> approveOffer(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @PathVariable String id, @RequestBody OfferStatusData data) throws MessagingException {
+    public Mono<ResponseEntity> approveOffer(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @PathVariable String id, @Valid @RequestBody OfferStatusData data) throws MessagingException {
         var admin = userService.getUserFromTokenHeader(authorizationHeader);
         offerService.setOfferStatus(admin, id, data);
         return Mono.just(new ResponseEntity<>(OK));

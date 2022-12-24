@@ -6,6 +6,7 @@ import com.mzdyrski.itjobboard.exception.UserExistsException;
 import com.mzdyrski.itjobboard.security.JWTTokenProvider;
 import com.mzdyrski.itjobboard.user.dto.*;
 import lombok.RequiredArgsConstructor;
+import org.bson.types.ObjectId;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Mono;
 
 import javax.mail.MessagingException;
+import javax.validation.Valid;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -30,7 +32,7 @@ import static org.springframework.http.HttpStatus.*;
 @RequiredArgsConstructor
 @Service
 @RestController
-@RequestMapping(value = "/user")
+@RequestMapping(value = "/users")
 @CrossOrigin(origins = "http://localhost:3000")
 public class UserController {
 
@@ -39,7 +41,7 @@ public class UserController {
     private final AuthenticationManager authenticationManager;
 
     @PostMapping("/register")
-    public Mono<ResponseEntity<User>> register(@RequestBody RegisterData data) throws UserExistsException, InvalidEmailException, BadRequestDataException, MessagingException {
+    public Mono<ResponseEntity<User>> register(@Valid @RequestBody RegisterData data) throws UserExistsException, InvalidEmailException, BadRequestDataException, MessagingException {
         userService.register(data, "http://localhost:3000");
         return Mono.just(new ResponseEntity<>(CREATED));
     }
@@ -55,7 +57,8 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public Mono<ResponseEntity<User>> login(@RequestBody LoginData loginData) {
+    public Mono<ResponseEntity<User>> login(@Valid @RequestBody LoginData loginData) {
+        System.out.println("SSS");
         authenticate(loginData.email(), loginData.password());
         var user = userService.loadUserByUsername(loginData.email());
         var jwtHeader = getJwtHeader(user);
@@ -70,14 +73,6 @@ public class UserController {
         return Mono.just(new ResponseEntity<>(user, OK));
     }
 
-    @PostMapping("/account")
-    public Mono<ResponseEntity<User>> accountInfoUpdate(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @RequestBody UserUpdateData data) {
-        var user = userService.getUserFromTokenHeader(authorizationHeader);
-        // TODO aktualizacja konta(mapowanie body na usera)
-        userService.updateUserInfo(user, data);
-        return Mono.just(new ResponseEntity<>(user, OK));
-    }
-
     @PostMapping(value = "/account/cv", consumes = {"multipart/mixed", "multipart/form-data"})
     public Mono<ResponseEntity<User>> employeeCvUpdate(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @RequestPart(name = "file") MultipartFile multipartFile) throws IOException {
         var user = userService.getUserFromTokenHeader(authorizationHeader);
@@ -87,13 +82,13 @@ public class UserController {
     }
 
     @PostMapping("/account/password")
-    public Mono<ResponseEntity<String>> passwordUpdate(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @RequestBody ChangePasswordData data) throws BadRequestDataException {
+    public Mono<ResponseEntity<String>> passwordUpdate(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,@Valid @RequestBody ChangePasswordData data) throws BadRequestDataException {
         userService.changePassword(authorizationHeader, data);
         return Mono.just(new ResponseEntity<>(OK));
     }
 
     @PostMapping("/resetpassword")
-    public Mono<ResponseEntity<String>> passwordUpdate(@RequestBody ResetPasswordData data) {
+    public Mono<ResponseEntity<String>> passwordUpdate(@Valid @RequestBody ResetPasswordData data) {
         userService.resetPassword(data.email());
         return Mono.just(new ResponseEntity<>("PASSWORD RESETED", OK));
     }
@@ -108,7 +103,7 @@ public class UserController {
                                                      @RequestParam Optional<Long> page,
                                                      @RequestParam Optional<Long> limit) {
         var skip0 = skip(0L);
-        var userIdAgg = userId.isPresent() ? match(new Criteria("id").regex(userId.orElse(""))) : skip0;
+        var userIdAgg = userId.isPresent() ? match(new Criteria("_id").is(new ObjectId(userId.get()))) : skip0;
         var emailAgg = email.isPresent() ? match(new Criteria("email").regex(email.orElse(""))) : skip0;
         var roleAgg = role.isPresent() ? match(new Criteria("role").is(role.get())) : skip0;
         var activeAgg = active.isPresent() ? match(new Criteria("active").is(active.get())) : skip0;
@@ -116,7 +111,7 @@ public class UserController {
         var skipAgg = (page.isPresent() && limit.isPresent()) ? skip(page.get() * limit.get()) : skip0;
         var limitAgg = limit.isPresent() ? limit(limit.get()) : skip0;
 
-        var sortCriteria = sort(Sort.Direction.DESC, "joinDate");
+        var sortCriteria = sort(Sort.Direction.DESC, "joinDate").and(Sort.Direction.DESC, "email");
         var projectionOperation = project().andInclude("id", "email", "role", "joinDate", "active", "locked");
 
         var aggregation = newAggregation(
@@ -135,7 +130,7 @@ public class UserController {
     }
 
     @PostMapping("/admin/{userId}")
-    public Mono<ResponseEntity<List<User>>> updateUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @PathVariable String userId, @RequestBody UserStatusData data) {
+    public Mono<ResponseEntity<List<User>>> updateUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @PathVariable String userId, @Valid @RequestBody UserStatusData data) {
         var admin = userService.getUserFromTokenHeader(authorizationHeader);
         // TODO
         userService.updateUserStatus(userId, data);

@@ -3,7 +3,7 @@ import { Menu, MenuContent, MenuItem } from './DropdownButton.styled';
 
 function LoggedMenuDropdown() {
   const handleLogout = () => {
-    localStorage.removeItem('jwt-token');
+    localStorage.removeItem('token');
   };
 
   const switchLoggedContent = () => {
@@ -14,7 +14,7 @@ function LoggedMenuDropdown() {
           {hasAuthority('offer:create') && <MenuItem href="/add-offer">Add offer</MenuItem>}
           {hasAuthority('adminPanel:manage') && <MenuItem href="/admin-panel/offers">Manage offers</MenuItem>}
           {hasAuthority('adminPanel:manage') && <MenuItem href="/admin-panel/users">Manage users</MenuItem>}
-          <MenuItem href="/my-offers">My offers</MenuItem>
+          {(hasAuthority('offer:create') || hasAuthority('offer:apply')) && <MenuItem href="/my-offers">My offers</MenuItem>}
           <MenuItem href="/" onClick={handleLogout}>Logout</MenuItem>
         </MenuContent>
       );

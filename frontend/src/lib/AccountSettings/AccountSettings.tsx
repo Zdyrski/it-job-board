@@ -17,9 +17,9 @@ import {
   MainContainer, BackgroundContainer, SubContainer, DetailRowContainer, Title,
 } from './AccountSettings.styled';
 
-const ACCOUNT_URL = 'http://localhost:8080/user/account';
-const CV_UPLOAD_URL = 'http://localhost:8080/user/account/cv';
-const PASSWORD_CHANGE_URL = 'http://localhost:8080/user/account/password';
+const ACCOUNT_URL = 'http://localhost:8080/users/account';
+const CV_UPLOAD_URL = 'http://localhost:8080/users/account/cv';
+const PASSWORD_CHANGE_URL = 'http://localhost:8080/users/account/password';
 
 const initialUserState = {
   email: '',

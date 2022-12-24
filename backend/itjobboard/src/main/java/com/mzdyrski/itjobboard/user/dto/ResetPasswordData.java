@@ -1,4 +1,6 @@
 package com.mzdyrski.itjobboard.user.dto;
 
-public record ResetPasswordData(String email) {
+import javax.validation.constraints.Email;
+
+public record ResetPasswordData(@Email String email) {
 }

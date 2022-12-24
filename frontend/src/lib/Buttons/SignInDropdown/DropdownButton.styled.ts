@@ -5,6 +5,7 @@ export const MenuContent = styled('div', {
   right: '0rem',
   top: '100%',
   display: 'none',
+  width: '100%',
 });
 
 export const Menu = styled('div', {
@@ -31,7 +32,11 @@ export const Menu = styled('div', {
 
 export const MenuItem = styled('a', {
   display: 'flex',
-  padding: '0.6rem',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: '0.4rem',
+  textAlign: 'center',
   color: '$secondaryColor',
   backgroundColor: '$primaryColor',
   textDecoration: 'none',

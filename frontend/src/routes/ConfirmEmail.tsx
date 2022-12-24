@@ -7,7 +7,7 @@ import GlitchedButton from '../lib/Buttons/GlitchedButton/GlitchedButton';
 import { FlexColumnCenterContainer } from '../lib/Containers/Containers.styled';
 import { getHeaders } from '../utils/helperFunctions';
 
-const CONFIRM_EMAIL_URL = 'http://localhost:8080/user/register/confirm';
+const CONFIRM_EMAIL_URL = 'http://localhost:8080/users/register/confirm';
 
 const initialResponseState = {
   openError: false,

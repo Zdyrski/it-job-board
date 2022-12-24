@@ -2,11 +2,13 @@ package com.mzdyrski.itjobboard.exception;
 
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.http.fileupload.impl.SizeLimitExceededException;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -22,9 +24,9 @@ public class ExceptionHandling implements ErrorController {
     private static final String ACCOUNT_DISABLED = "";
     private static final String ACCOUNT_LOCKED = "YOUR ACCOUNT HAS BEEN LOCKED DUE TO MANY TRIES TO LOGIN";
     private static final String METHOD_IS_NOT_ALLOWED = "";
-    private static final String INTERNAL_SERVER_ERROR_MSG = "";
+    private static final String FILE_SIZE_EXCEEDED = "File size exceeded";
     private static final String INCORRECT_CREDENTIALS = "EMAIL/PASSWORD INCORRECT";
-    private static final String NOT_ENOUGH_PERMISSION = "";
+    private static final String REQUEST_NOT_VALID = "REQUEST WITH GIVEN BODY IS NOT VALID";
     private static final String EMAIL_SENDING_ERROR = "THERE WAS AN ERROR WHILE SENDING AN EMAIL";
 
     @ExceptionHandler(BadCredentialsException.class)
@@ -71,6 +73,16 @@ public class ExceptionHandling implements ErrorController {
     @ExceptionHandler(MessagingException.class)
     public ResponseEntity<HttpResponse> offerNotAvailableException() {
         return createHttpResponse(INTERNAL_SERVER_ERROR, EMAIL_SENDING_ERROR);
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<HttpResponse> methodArgumentNotValidException() {
+        return createHttpResponse(BAD_REQUEST, REQUEST_NOT_VALID);
+    }
+
+    @ExceptionHandler(SizeLimitExceededException.class)
+    public ResponseEntity<HttpResponse> sizeLimitExceededException() {
+        return createHttpResponse(BAD_REQUEST, FILE_SIZE_EXCEEDED);
     }
 
 //    TODO uncomment

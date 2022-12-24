@@ -9,12 +9,12 @@ interface ProtectedRoutesInterface{
 
 function ProtectedRoutes({ logged, authority } : ProtectedRoutesInterface) {
   const getDecodedToken = () => {
-    const token = localStorage.getItem('jwt-token');
+    const token = localStorage.getItem('token');
     if (token !== null) {
       try {
         return jwtDecode(token);
       } catch (error) {
-        localStorage.removeItem('jwt-token');
+        localStorage.removeItem('token');
       }
     }
     return null;
@@ -27,7 +27,7 @@ function ProtectedRoutes({ logged, authority } : ProtectedRoutesInterface) {
         return true;
       }
     }
-    localStorage.removeItem('jwt-token');
+    localStorage.removeItem('token');
     return false;
   };
 

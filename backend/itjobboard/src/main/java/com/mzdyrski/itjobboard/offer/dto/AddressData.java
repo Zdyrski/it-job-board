@@ -1,4 +1,8 @@
 package com.mzdyrski.itjobboard.offer.dto;
 
-public record AddressData(String country, String city, String street) {
+import javax.validation.constraints.NotBlank;
+
+public record AddressData(@NotBlank String country,
+                          @NotBlank String city,
+                          @NotBlank String street) {
 }

@@ -1,4 +1,7 @@
 package com.mzdyrski.itjobboard.user.dto;
 
-public record UserStatusData(Boolean active, Boolean locked) {
+import javax.validation.constraints.NotNull;
+
+public record UserStatusData(@NotNull Boolean active,
+                             @NotNull Boolean locked) {
 }

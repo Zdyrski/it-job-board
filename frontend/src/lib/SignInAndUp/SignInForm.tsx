@@ -9,7 +9,7 @@ import GlitchedButton from '../Buttons/GlitchedButton/GlitchedButton';
 import { StyledTextField } from '../Inputs/Inputs.styled';
 import { FormContainer, PageContainer } from './SignInAndUp.styled';
 
-const SIGN_IN_URL = 'http://localhost:8080/user/login';
+const SIGN_IN_URL = 'http://localhost:8080/users/login';
 
 const initialState = {
   email: '',
@@ -67,7 +67,7 @@ function SignInForm() {
     axios.post(SIGN_IN_URL, signInData).then((response) => {
       if (response.status === 200) {
         console.log(response);
-        localStorage.setItem('jwt-token', response.headers['jwt-token']);
+        localStorage.setItem('token', response.headers.token);
         setSuccessAlert();
         setState(initialState);
         setTimeout(() => navigate('/'), 2000);

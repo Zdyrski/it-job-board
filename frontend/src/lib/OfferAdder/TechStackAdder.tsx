@@ -14,7 +14,7 @@ import { LevelDot } from '../OfferDetailed/TechStack.styled';
 import { SubContainer, Title, InputsContainer } from './OfferAdder.styled';
 import { MainContainer, SkillAndRatingContainer } from './TechStackAdder.styled';
 
-const TAGS_URL = 'http://localhost:8080/tag';
+const TAGS_URL = 'http://localhost:8080/tags';
 
 const SKILL_LEVEL_MAP = new Map([
   [1, 'nice to have'],

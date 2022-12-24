@@ -8,7 +8,6 @@ import com.mzdyrski.itjobboard.email.EmailService;
 import com.mzdyrski.itjobboard.user.dto.ChangePasswordData;
 import com.mzdyrski.itjobboard.user.dto.RegisterData;
 import com.mzdyrski.itjobboard.user.dto.UserStatusData;
-import com.mzdyrski.itjobboard.user.dto.UserUpdateData;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +28,6 @@ import java.util.Objects;
 import static com.mzdyrski.itjobboard.security.SecurityConstants.TOKEN_HEADER;
 import static com.mzdyrski.itjobboard.email.EmailType.ACCOUNT_CREATED;
 import static com.mzdyrski.itjobboard.user.Role.ROLE_EMPLOYEE;
-import static com.mzdyrski.itjobboard.user.Role.ROLE_EMPLOYER;
 
 @RequiredArgsConstructor
 @Service
@@ -77,22 +75,6 @@ public class UserService implements UserDetailsService {
 
     public User findUserByEmail(String email) {
         return userRepository.findUserByEmail(email);
-    }
-
-    public void updateUserInfo(User user, UserUpdateData data) {
-        if (Objects.equals(user.getRole(), ROLE_EMPLOYEE.name())) {
-            var employee = (Employee) user;
-            employee.setFirstName(data.firstName());
-            employee.setLastName(data.lastName());
-            userRepository.save(employee);
-        } else if (Objects.equals(user.getRole(), ROLE_EMPLOYER.name())) {
-            var employer = (Employer) user;
-            employer.setCompanyName(data.companyName());
-            employer.setCompanySize(data.companySize());
-            employer.setCompanyLogoUrl(data.companyLogoUrl());
-            employer.setCompanySiteUrl(data.companySiteUrl());
-            userRepository.save(employer);
-        }
     }
 
     public void changePassword(String authorizationHeader, ChangePasswordData data) throws BadRequestDataException {

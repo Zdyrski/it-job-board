@@ -7,6 +7,7 @@ import axios from 'axios';
 import React, { useContext, useState } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import _ from 'lodash';
 import { getHeaders } from '../../utils/helperFunctions';
 import OfferDataContext from '../../contexts/OfferDataContext';
 import GlitchedButton from '../Buttons/GlitchedButton/GlitchedButton';
@@ -141,7 +142,7 @@ function OfferAdder() {
     } else {
       setErrorsState((prev) => ({ ...prev, description: false }));
     }
-    if (errorsState === initialErrorsState) {
+    if (_.isEqual(errorsState, initialErrorsState)) {
       return true;
     }
     return false;
@@ -169,7 +170,7 @@ function OfferAdder() {
     axios.post(ADD_OFFER_URL, offerDataToSend, { headers }).then((response) => {
       if (response.status === 201) {
         console.log(response);
-        // localStorage.setItem('jwt-token', response.headers['jwt-token']);
+        // localStorage.setItem('token', response.headers['token']);
         // setSuccessAlert();
         // setState(initialState);
         // setTimeout(() => navigate('/'), 2000);

@@ -131,6 +131,12 @@ public class OfferService {
         offerRepository.save(offer);
     }
 
+    public void archiveOffer(String id) {
+        var offer = offerRepository.findById(id).orElseThrow();
+        offer.setArchived(true);
+        offerRepository.save(offer);
+    }
+
     private ListElOfferData getListElForGivenOffer(Offer offer) {
         var employer = getEmployerById(offer.getEmployerId());
         return new ListElOfferData(

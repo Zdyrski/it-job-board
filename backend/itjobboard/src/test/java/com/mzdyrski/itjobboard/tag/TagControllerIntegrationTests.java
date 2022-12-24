@@ -21,7 +21,7 @@ public class TagControllerIntegrationTests extends TestBase {
 
         // when, then
         webTestClient.post()
-                .uri("/tag")
+                .uri("/tags/admin")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header(HttpHeaders.AUTHORIZATION, TOKEN_HEADER + adminToken)
                 .body(BodyInserters.fromValue(givenTag))
@@ -38,10 +38,11 @@ public class TagControllerIntegrationTests extends TestBase {
 
         // when, then
         webTestClient.get()
-                .uri("/tag")
+                .uri("/tags")
                 .exchange()
                 .expectStatus().isOk()
-                .expectBodyList(String.class).hasSize(1).contains(givenTagName);
+                .expectBodyList(String.class)
+                .hasSize(1);
     }
 
 

@@ -6,6 +6,7 @@ import {
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import _ from 'lodash';
 import FormButton from '../Buttons/FormButton/FormButton';
 import GlitchedButton from '../Buttons/GlitchedButton/GlitchedButton';
 import { StyledTextField } from '../Inputs/Inputs.styled';
@@ -17,7 +18,7 @@ import {
   REGEX_EMAIL, REGEX_NAME, REGEX_PASSWORD,
 } from '../../utils/constants';
 
-const SIGN_UP_URL = 'http://localhost:8080/user/register';
+const SIGN_UP_URL = 'http://localhost:8080/users/register';
 
 const initialState = {
   email: '',
@@ -93,56 +94,43 @@ function SignUpForm() {
   };
 
   const validateData = () => {
+    const tempErrorState = _.clone(initialErrorsState);
+
     if (state.role === 'ROLE_EMPLOYEE') {
       if (!REGEX_NAME.test(state.firstName)) {
-        setErrorsState((prev) => ({ ...prev, firstName: true }));
-      } else {
-        setErrorsState((prev) => ({ ...prev, firstName: false }));
+        tempErrorState.firstName = true;
       }
       if (!REGEX_NAME.test(state.lastName)) {
-        setErrorsState((prev) => ({ ...prev, lastName: true }));
-      } else {
-        setErrorsState((prev) => ({ ...prev, lastName: false }));
+        tempErrorState.lastName = true;
       }
     } else if (state.role === 'ROLE_EMPLOYER') {
       if (!REGEX_COMPANY_NAME.test(state.companyName)) {
-        setErrorsState((prev) => ({ ...prev, companyName: true }));
-      } else {
-        setErrorsState((prev) => ({ ...prev, companyName: false }));
+        tempErrorState.companyName = true;
       }
       if (!REGEX_COMPANY_SITE_URL.test(state.companySiteUrl)) {
-        setErrorsState((prev) => ({ ...prev, companySiteUrl: true }));
-      } else {
-        setErrorsState((prev) => ({ ...prev, companySiteUrl: false }));
+        tempErrorState.companySiteUrl = true;
       }
       if (state.companySize > 0 && state.companySize < 100000000) {
-        setErrorsState((prev) => ({ ...prev, companySize: true }));
-      } else {
-        setErrorsState((prev) => ({ ...prev, companySize: false }));
+        tempErrorState.companySize = true;
       }
       if (!REGEX_COMPANY_LOGO_URL.test(state.companyLogoUrl)) {
-        setErrorsState((prev) => ({ ...prev, companyLogoUrl: true }));
-      } else {
-        setErrorsState((prev) => ({ ...prev, companyLogoUrl: false }));
+        tempErrorState.companyLogoUrl = true;
       }
     }
     if (!REGEX_EMAIL.test(state.email)) {
-      setErrorsState((prev) => ({ ...prev, email: true }));
-    } else {
-      setErrorsState((prev) => ({ ...prev, email: false }));
+      tempErrorState.email = true;
     }
     if (!REGEX_PASSWORD.test(state.password1) || !REGEX_PASSWORD.test(state.password2)) {
-      setErrorsState((prev) => ({ ...prev, password1: true, password2: true }));
-    } else {
-      setErrorsState((prev) => ({ ...prev, password1: false, password2: false }));
+      tempErrorState.password1 = true;
+      tempErrorState.password2 = true;
     }
     if (state.password1 !== state.password2) {
-      setErrorsState((prev) => ({ ...prev, password1: true, password2: true }));
-    } else {
-      setErrorsState((prev) => ({ ...prev, password1: false, password2: false }));
+      tempErrorState.password1 = true;
+      tempErrorState.password2 = true;
     }
-    console.log(errorsState);
-    if (errorsState === initialErrorsState) {
+    setErrorsState(tempErrorState);
+    console.log(tempErrorState);
+    if (_.isEqual(tempErrorState, initialErrorsState)) {
       return true;
     }
     return false;
@@ -174,10 +162,11 @@ function SignUpForm() {
   };
 
   const handleSignUp = () => {
-    console.log(validateData());
     if (!validateData()) {
+      console.log('NOT EQ');
       return;
     }
+
     const signUpData = getSignUpData();
     console.log(signUpData);
     if (signUpData === null) {

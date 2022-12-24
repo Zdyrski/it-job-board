@@ -17,13 +17,13 @@ class UserControllerIntegrationTests extends TestBase {
     @Test
     public void registerEmployeeTest() {
         // given
-        var givenEmail = "employee2";
+        var givenEmail = "employee2@aa.com";
         var givenRole = "ROLE_EMPLOYEE";
         var givenRegisterData = getUser(givenEmail, givenRole);
 
         // when, then
         webTestClient.post()
-                .uri("/user/register")
+                .uri("/users/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(givenRegisterData))
                 .exchange()
@@ -34,13 +34,13 @@ class UserControllerIntegrationTests extends TestBase {
     @Test
     public void registerAndConfirmationTokenTest() {
         // given
-        var givenEmail = "employee2";
+        var givenEmail = "employee2@aa.com";
         var givenRole = "ROLE_EMPLOYEE";
         var givenRegisterData = getUser(givenEmail, givenRole);
 
         // when
         webTestClient.post()
-                .uri("/user/register")
+                .uri("/users/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(givenRegisterData))
                 .exchange()
@@ -51,7 +51,7 @@ class UserControllerIntegrationTests extends TestBase {
 
         // then
         webTestClient.get()
-                .uri("/user/register/confirm?token=" + token)
+                .uri("/users/register/confirm?token=" + token)
                 .exchange()
                 .expectStatus().isOk();
         assertThat(getUserInDb(givenEmail)).extracting("active").isEqualTo(true);
@@ -60,13 +60,13 @@ class UserControllerIntegrationTests extends TestBase {
     @Test
     public void registerEmployerTest() {
         // given
-        var givenEmail = "employer2";
+        var givenEmail = "employer2@aa.com";
         var givenRole = "ROLE_EMPLOYER";
         var givenRegisterData = getUser(givenEmail, givenRole);
 
         // when, then
         webTestClient.post()
-                .uri("/user/register")
+                .uri("/users/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(givenRegisterData))
                 .exchange()
@@ -77,14 +77,14 @@ class UserControllerIntegrationTests extends TestBase {
     @Test
     public void registerShouldFailWhenUserExists() {
         // given
-        var givenEmail = "employee";
+        var givenEmail = "employee@aa.com";
         var givenRole = "ROLE_EMPLOYEE";
         var givenRegisterData = getUser(givenEmail, givenRole);
 
         // when, then
         assertThat(getUserInDb(givenEmail)).extracting("email").isEqualTo(givenEmail);
         webTestClient.post()
-                .uri("/user/register")
+                .uri("/users/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(givenRegisterData))
                 .exchange()
@@ -94,13 +94,13 @@ class UserControllerIntegrationTests extends TestBase {
     @Test
     public void loginShouldReturnToken() {
         // given
-        var givenEmail = "employee";
+        var givenEmail = "employee@aa.com";
         var givenPassword = "password";
         var givenLoginData = new LoginData(givenEmail, givenPassword);
 
         // when, then
         webTestClient.post()
-                .uri("/user/login")
+                .uri("/users/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(givenLoginData))
                 .exchange()
@@ -111,13 +111,13 @@ class UserControllerIntegrationTests extends TestBase {
     @Test
     public void failedLoginShouldReturnBadRequest() {
         // given
-        var givenEmail = "employee";
+        var givenEmail = "employee@aa.com";
         var givenPassword = "password2";
         var givenLoginData = new LoginData(givenEmail, givenPassword);
 
         // when, then
         webTestClient.post()
-                .uri("/user/login")
+                .uri("/users/login")
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(givenLoginData))
                 .exchange()

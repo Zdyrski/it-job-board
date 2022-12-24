@@ -12,7 +12,7 @@ import { MainContainer, UserAndRadio } from './AdminUsersList.styled';
 import User from './User';
 import AdminUsersFilterDrawer from '../FilterDrawer/AdminUsersFilterDrawer';
 
-const ADMIN_USERS_URL = 'http://localhost:8080/user/admin';
+const ADMIN_USERS_URL = 'http://localhost:8080/users/admin';
 
 const initialUserState = {
   active: false,

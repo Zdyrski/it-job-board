@@ -2,6 +2,7 @@ package com.mzdyrski.itjobboard;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mzdyrski.itjobboard.offer.Offer;
+import com.mzdyrski.itjobboard.offer.SchedulerService;
 import com.mzdyrski.itjobboard.user.*;
 import com.mzdyrski.itjobboard.offer.dto.AddressData;
 import com.mzdyrski.itjobboard.offer.dto.ContractData;
@@ -21,6 +22,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
+import java.time.Clock;
 import java.util.Date;
 
 import static com.mzdyrski.itjobboard.offer.ApprovalState.APPROVED;
@@ -37,10 +39,7 @@ public class TestBase {
     protected WebTestClient webTestClient;
 
     @Autowired
-    protected UserService userService;
-
-    @Autowired
-    protected UserController userController;
+    protected SchedulerService schedulerService;
 
     @Autowired
     protected ObjectMapper objectMapper;
@@ -57,6 +56,9 @@ public class TestBase {
 
     @MockBean
     protected EmailService emailService;
+
+    @MockBean
+    protected Clock clock;
 
     @BeforeEach
     public void mockEmailService() {
@@ -88,6 +90,7 @@ public class TestBase {
     public void cleanDb() {
         mongoTemplate.dropCollection("users");
         mongoTemplate.dropCollection("offers");
+        mongoTemplate.dropCollection("tags");
         mongoTemplate.dropCollection("applications");
         mongoTemplate.dropCollection("employees_cvs");
     }
@@ -108,7 +111,7 @@ public class TestBase {
     protected void saveEmployeeToDb() {
         var employee = new Employee();
         employee.setId("employeeId");
-        employee.setEmail("employee");
+        employee.setEmail("employee@aa.com");
         employee.setPassword(getEncryptedPassword());
         employee.setRole(ROLE_EMPLOYEE.name());
         employee.setAuthorities(ROLE_EMPLOYEE.getAuthorities());
@@ -120,7 +123,7 @@ public class TestBase {
     protected void saveEmployerToDb() {
         var employer = new Employer();
         employer.setId("employerId");
-        employer.setEmail("employer");
+        employer.setEmail("employer@aa.com");
         employer.setPassword(getEncryptedPassword());
         employer.setRole(ROLE_EMPLOYER.name());
         employer.setAuthorities(ROLE_EMPLOYER.getAuthorities());
@@ -131,7 +134,7 @@ public class TestBase {
 
     protected void saveAdminToDb() {
         var admin = new User();
-        admin.setEmail("admin");
+        admin.setEmail("admin@aa.com");
         admin.setPassword(getEncryptedPassword());
         admin.setRole(ROLE_ADMIN.name());
         admin.setAuthorities(ROLE_ADMIN.getAuthorities());
@@ -141,17 +144,17 @@ public class TestBase {
     }
 
     protected String getEmployeeToken() {
-        var employee = mongoTemplate.findOne(new Query(new Criteria("email").is("employee")), Employee.class, "users");
+        var employee = mongoTemplate.findOne(new Query(new Criteria("email").is("employee@aa.com")), Employee.class, "users");
         return jwtTokenProvider.generateJwtToken(new UserSecurity(employee));
     }
 
     protected String getEmployerToken() {
-        var employer = mongoTemplate.findOne(new Query(new Criteria("email").is("employer")), Employer.class, "users");
+        var employer = mongoTemplate.findOne(new Query(new Criteria("email").is("employer@aa.com")), Employer.class, "users");
         return jwtTokenProvider.generateJwtToken(new UserSecurity(employer));
     }
 
     protected String getAdminToken() {
-        var admin = mongoTemplate.findOne(new Query(new Criteria("email").is("admin")), User.class, "users");
+        var admin = mongoTemplate.findOne(new Query(new Criteria("email").is("admin@aa.com")), User.class, "users");
         return jwtTokenProvider.generateJwtToken(new UserSecurity(admin));
     }
 
@@ -167,9 +170,10 @@ public class TestBase {
         offer.setExperienceLevel(MEDIUM.value);
         offer.setTechStack(new SkillData[]{new SkillData("Java", 5), new SkillData("React", 5)});
         offer.setTags(new String[]{"Java"});
-        offer.setDate(new Date());
+        offer.setDate(new Date(clock.millis()));
         offer.setDescription("description");
         offer.setApprovalStatus(APPROVED.value);
+        offer.setArchived(false);
         return offer;
     }
 

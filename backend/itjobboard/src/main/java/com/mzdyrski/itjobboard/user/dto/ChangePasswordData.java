@@ -1,4 +1,7 @@
 package com.mzdyrski.itjobboard.user.dto;
 
-public record ChangePasswordData(String oldPassword, String newPassword) {
+import javax.validation.constraints.NotBlank;
+
+public record ChangePasswordData(@NotBlank String oldPassword,
+                                 @NotBlank String newPassword) {
 }

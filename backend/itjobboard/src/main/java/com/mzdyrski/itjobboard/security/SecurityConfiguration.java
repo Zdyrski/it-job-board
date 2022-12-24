@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
@@ -55,6 +56,7 @@ public class SecurityConfiguration {
                 .authorizeRequests().antMatchers(PUBLIC_URLS).permitAll()
                 .antMatchers(EMPLOYEE_URLS).hasAuthority("offer:apply")
                 .antMatchers(EMPLOYER_URLS).hasAuthority("offer:create")
+                .antMatchers(HttpMethod.PUT, EMPLOYER_PUT_URLS).hasAuthority("offer:archive")
                 .antMatchers(ADMIN_URLS).hasAuthority("adminPanel:manage")
                 .anyRequest().authenticated()
                 .and()

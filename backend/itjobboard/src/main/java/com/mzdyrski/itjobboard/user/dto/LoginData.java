@@ -1,4 +1,8 @@
 package com.mzdyrski.itjobboard.user.dto;
 
-public record LoginData(String email, String password) {
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+
+public record LoginData(@Email String email,
+                        @NotBlank String password) {
 }

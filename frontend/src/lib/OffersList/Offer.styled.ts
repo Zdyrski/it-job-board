@@ -147,10 +147,12 @@ export const AdminOfferMainContainer = styled('div', {
   justifyContent: 'center',
   alignItems: 'center',
   width: '100%',
-  height: '90vh',
 });
 
 export const StyledRadioGroup = styled(RadioGroup, {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
   width: '100%',
 });
 

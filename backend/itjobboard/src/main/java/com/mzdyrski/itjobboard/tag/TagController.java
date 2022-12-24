@@ -6,13 +6,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 
+import javax.validation.Valid;
+import java.util.Arrays;
+
 import static org.springframework.http.HttpStatus.CREATED;
 import static org.springframework.http.HttpStatus.OK;
 
 @RequiredArgsConstructor
 @Service
 @RestController
-@RequestMapping(value = "/tag")
+@RequestMapping(value = "/tags")
 @CrossOrigin(origins = "http://localhost:3000")
 public class TagController {
 
@@ -24,8 +27,8 @@ public class TagController {
         return Mono.just(new ResponseEntity<>(tags, OK));
     }
 
-    @PostMapping("")
-    public Mono<ResponseEntity<Tag>> addTag(@RequestBody TagData data) {
+    @PostMapping("/admin")
+    public Mono<ResponseEntity<Tag>> addTag(@Valid @RequestBody TagData data) {
         tagService.addTag(data);
         return Mono.just(new ResponseEntity<>(CREATED));
     }

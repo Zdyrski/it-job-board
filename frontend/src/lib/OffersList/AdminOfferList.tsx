@@ -96,11 +96,12 @@ function AdminOfferList() {
 
   return (
     <AdminOfferMainContainer>
-      <StyledInfinityScroll
-        loadMore={fetchData}
-        hasMore={hasMore}
-      >
-        <StyledRadioGroup value={offerId} onChange={handleOfferIdAndStatusChange}>
+      <StyledRadioGroup value={offerId} onChange={handleOfferIdAndStatusChange}>
+        <StyledInfinityScroll
+          loadMore={fetchData}
+          hasMore={hasMore}
+        >
+
           {data.map((offer : AdminOfferInterface) => (
             <RowFlex key={offer.offerId}>
               <Offer
@@ -120,8 +121,8 @@ function AdminOfferList() {
               <Radio value={offer.offerId} tabIndex={offer.approvalStatus} required={offer.archived} />
             </RowFlex>
           ))}
-        </StyledRadioGroup>
-      </StyledInfinityScroll>
+        </StyledInfinityScroll>
+      </StyledRadioGroup>
       <AppBar position="sticky" color="primary" sx={{ top: 'auto', bottom: 0 }}>
         <Toolbar>
           <SelectsDiv>
