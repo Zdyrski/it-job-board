@@ -2,7 +2,6 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { lazy, Suspense } from 'react';
 import { globalStyles } from './lib/stitches.config';
-import Test from './routes/Test';
 import ProtectedRoutes from './routes/ProtectedRoutes';
 
 const Account = lazy(() => import('./routes/Account'));
@@ -42,7 +41,6 @@ function App() {
             <Route path="/admin-panel/offers" element={<AdminOffers />} />
             <Route path="/admin-panel/users" element={<AdminUsers />} />
           </Route>
-          <Route path="/test" element={<Test />} />
           <Route path="/*" element={<div />} />
         </Routes>
       </BrowserRouter>

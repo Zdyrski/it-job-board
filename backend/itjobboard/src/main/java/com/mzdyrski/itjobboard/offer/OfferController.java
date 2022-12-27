@@ -84,11 +84,10 @@ public class OfferController {
     }
 
     @PostMapping("")
-    public Mono<ResponseEntity<Offer>> addOffer(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @Valid @RequestBody OfferData data) throws MessagingException {
-        System.out.println("xd");
+    public Mono<ResponseEntity<String>> addOffer(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @Valid @RequestBody OfferData data) throws MessagingException {
         var employer = userService.getUserFromTokenHeader(authorizationHeader);
-        offerService.addOffer(employer, data);
-        return Mono.just(new ResponseEntity<>(CREATED));
+        var newOfferId = offerService.addOffer(employer, data);
+        return Mono.just(new ResponseEntity<>(newOfferId, CREATED));
     }
 
     @GetMapping("/{id}")
@@ -108,7 +107,6 @@ public class OfferController {
             var userOffersList = offerService.getOffersByEmployer(user);
             return Mono.just(new ResponseEntity<>(userOffersList, OK));
         } else if (Objects.equals(user.getRole(), ROLE_EMPLOYEE.name())) {
-            System.out.println("1");
             var userOffersList = offerService.getOffersByEmployee(user);
             return Mono.just(new ResponseEntity<>(userOffersList, OK));
         }
@@ -116,14 +114,13 @@ public class OfferController {
     }
 
     @PutMapping("/{id}")
-    public Mono<ResponseEntity> archiveOffer(@PathVariable String id){
+    public Mono<ResponseEntity> archiveOffer(@PathVariable String id) {
         offerService.archiveOffer(id);
         return Mono.just(new ResponseEntity<>(id, OK));
     }
 
     @GetMapping("/admin")
-    public Mono<ResponseEntity<List<ListElWithStatusOfferData>>> getAdminOffers(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                                                                                @RequestParam Optional<String> title,
+    public Mono<ResponseEntity<List<ListElWithStatusOfferData>>> getAdminOffers(@RequestParam Optional<String> title,
                                                                                 @RequestParam Optional<String> city,
                                                                                 @RequestParam(value = "skill") Optional<String[]> skills,
                                                                                 @RequestParam Optional<RemoteState[]> remote,

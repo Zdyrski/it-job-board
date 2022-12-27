@@ -98,14 +98,14 @@ public class EmailService {
                         Below is your account activation link.
                         %s/confirm?token=%s
                                                 
-                        We wish you the luck in your recruitments!
-                        ITJobBoard Team""", placeholders[0], placeholders[1]);
+                        We wish you luck in your recruitments!
+                        ITJobBoard Team""", PORTAL_URL, placeholders[1]);
             }
             case APPLIED_EMPLOYEE -> {
                 return String.format("""
                         Hello,
                                                 
-                        you applied for %s on ITJobBoard to %s. Your CV was sent to employer.
+                        you applied for offer %s on ITJobBoard to %s. Your CV was sent to employer.
 
                         We wish you the luck!
                         ITJobBoard Team""", placeholders[0], placeholders[1]);
@@ -116,25 +116,28 @@ public class EmailService {
                                                 
                         someone applied for your offer %s on ITJobBoard. CV is in the attachments.
 
-                        We wish you the luck in your recruitments!
+                        We wish you luck in your recruitments!
                         ITJobBoard Team""", placeholders[0]);
             }
             case OFFER_ADDED -> {
                 return String.format("""
                         Hello,
                                                 
-                        your offer %s on ITJobBoard has been added. Please wait for its approval or contact our Team.
+                        your offer %s on ITJobBoard has been added. Below is its address.
+                        %s/offers/%s
+                        Please wait for its approval or contact our Team.
 
-                        We wish you the luck in your recruitments!
-                        ITJobBoard Team""", placeholders[0]);
+                        We wish you luck in your recruitments!
+                        ITJobBoard Team""", placeholders[0], PORTAL_URL, placeholders[1]);
             }
             case OFFER_APPROVED -> {
                 return String.format("""
                         Hello,
-                        your offer %s on ITJobBoard has been approved.
+                        your offer %s on ITJobBoard has been approved. Below is its address.
+                        %s/offers/%s
 
-                        We wish you the luck in your recruitments!
-                        ITJobBoard Team""", placeholders[0]);
+                        We wish you luck in your recruitments!
+                        ITJobBoard Team""", placeholders[0], PORTAL_URL, placeholders[1]);
             }
         }
         //TODO custom exception maybe

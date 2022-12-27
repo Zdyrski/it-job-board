@@ -6,7 +6,6 @@ export const MainContainer = styled('div', {
   justifyContent: 'center',
   alignItems: 'center',
   width: '100%',
-  height: '90vh',
 });
 
 export const UserContainer = styled('div', {
@@ -35,6 +34,7 @@ export const UserAndRadio = styled('div', {
   flexDirection: 'row',
   justifyContent: 'space-around',
   alignItems: 'center',
+  width: '100%',
 });
 
 export const InfoRow = styled('div', {

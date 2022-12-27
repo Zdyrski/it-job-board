@@ -8,7 +8,6 @@ import com.mzdyrski.itjobboard.offer.dto.*;
 import com.mzdyrski.itjobboard.user.Employee;
 import com.mzdyrski.itjobboard.user.Employer;
 import com.mzdyrski.itjobboard.user.User;
-import com.mzdyrski.itjobboard.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -29,7 +28,6 @@ public class OfferService {
 
     final private OfferRepository offerRepository;
     final private ApplicationRepository applicationRepository;
-    final private UserRepository userRepository;
     final private EmailService emailService;
     final private MongoTemplate mongoTemplate;
 
@@ -97,9 +95,9 @@ public class OfferService {
         return result;
     }
 
-    public void addOffer(User employer, OfferData offerData) throws MessagingException {
+    public String addOffer(User employer, OfferData offerData) throws MessagingException {
         if (!Objects.equals(employer.getRole(), ROLE_EMPLOYER.name())) {
-            return;
+            return null;
         }
         var newOffer = new Offer();
         newOffer.setEmployerId(employer.getId());
@@ -115,8 +113,9 @@ public class OfferService {
         newOffer.setDate(new Date());
         newOffer.setDescription(offerData.description());
         newOffer.setApprovalStatus(NOT_APPROVED.value);
-        offerRepository.save(newOffer);
-        emailService.sendEmail(employer.getEmail(), OFFER_ADDED, "url");
+        var savedOffer = mongoTemplate.save(newOffer, "offers");
+        emailService.sendEmail(employer.getEmail(), OFFER_ADDED, savedOffer.getTitle(), savedOffer.getId());
+        return savedOffer.getId();
     }
 
     public void setOfferStatus(User admin, String offerId, OfferStatusData data) throws MessagingException {
@@ -127,8 +126,10 @@ public class OfferService {
         var employer = getEmployerById(offer.getEmployerId());
         offer.setApprovalStatus(data.approvalStatus());
         offer.setArchived(data.archived());
-        emailService.sendEmail(employer.getEmail(), OFFER_APPROVED);
-        offerRepository.save(offer);
+        var savedOffer = mongoTemplate.save(offer, "offers");
+        if(!savedOffer.isArchived() && Objects.equals(savedOffer.getApprovalStatus(), APPROVED.value)){
+            emailService.sendEmail(employer.getEmail(), OFFER_APPROVED, savedOffer.getTitle(), savedOffer.getId());
+        }
     }
 
     public void archiveOffer(String id) {

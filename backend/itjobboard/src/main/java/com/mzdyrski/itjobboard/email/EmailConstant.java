@@ -5,6 +5,7 @@ public class EmailConstant {
     public static final String USERNAME = "itjobboardmz@gmail.com";
     public static final String PASSWORD = "vevyffhexpadyohb";
     public static final String FROM_EMAIL = "itjobboardmz@gmail.com";
+    public static final String PORTAL_URL = "http://localhost:3000";
     public static final String CC_EMAIL = "";
     public static final String GMAIL_SMTP_SERVER = "smtp.gmail.com";
     public static final String SMTP_HOST = "mail.smtp.host";

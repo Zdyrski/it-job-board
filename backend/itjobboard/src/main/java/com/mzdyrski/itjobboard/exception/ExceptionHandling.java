@@ -56,7 +56,6 @@ public class ExceptionHandling implements ErrorController {
 
     @ExceptionHandler(TokenExpiredException.class)
     public ResponseEntity<HttpResponse> tokenExpiredException(TokenExpiredException e) {
-        System.out.println("CATCHED");
         return createHttpResponse(INTERNAL_SERVER_ERROR, e.getMessage());
     }
 

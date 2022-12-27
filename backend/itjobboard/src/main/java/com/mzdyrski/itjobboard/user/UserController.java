@@ -42,7 +42,7 @@ public class UserController {
 
     @PostMapping("/register")
     public Mono<ResponseEntity<User>> register(@Valid @RequestBody RegisterData data) throws UserExistsException, InvalidEmailException, BadRequestDataException, MessagingException {
-        userService.register(data, "http://localhost:3000");
+        userService.register(data);
         return Mono.just(new ResponseEntity<>(CREATED));
     }
 
@@ -58,7 +58,6 @@ public class UserController {
 
     @PostMapping("/login")
     public Mono<ResponseEntity<User>> login(@Valid @RequestBody LoginData loginData) {
-        System.out.println("SSS");
         authenticate(loginData.email(), loginData.password());
         var user = userService.loadUserByUsername(loginData.email());
         var jwtHeader = getJwtHeader(user);

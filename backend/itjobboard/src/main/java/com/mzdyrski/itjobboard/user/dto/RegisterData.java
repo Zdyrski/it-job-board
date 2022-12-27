@@ -7,10 +7,10 @@ import javax.validation.constraints.NotNull;
 public record RegisterData(@Email String email,
                            @NotBlank String password,
                            @NotBlank String role,
-                           @NotBlank String firstName,
-                           @NotBlank String lastName,
-                           @NotBlank String companyName,
-                           @NotBlank String companySiteUrl,
-                           @NotNull Long companySize,
-                           @NotBlank String companyLogoUrl) {
+                           String firstName,
+                           String lastName,
+                           String companyName,
+                           String companySiteUrl,
+                           Long companySize,
+                           String companyLogoUrl) {
 }

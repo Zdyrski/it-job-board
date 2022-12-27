@@ -49,7 +49,7 @@ public class UserService implements UserDetailsService {
         return new UserSecurity(user);
     }
 
-    public void register(RegisterData data, String siteUrl) throws UserExistsException, InvalidEmailException, BadRequestDataException, MessagingException {
+    public void register(RegisterData data) throws UserExistsException, InvalidEmailException, BadRequestDataException, MessagingException {
         validateNewEmail(data.email());
         var user = getUserClass(data);
         user.setEmail(data.email());
@@ -62,7 +62,7 @@ public class UserService implements UserDetailsService {
         userRepository.save(user);
         var confirmationToken = new ConfirmationToken(user.getId());
         tokenRepository.save(confirmationToken);
-        emailService.sendEmail(data.email(), ACCOUNT_CREATED, siteUrl, confirmationToken.getToken());
+        emailService.sendEmail(data.email(), ACCOUNT_CREATED, confirmationToken.getToken());
     }
 
     public void activateUser(String token) {

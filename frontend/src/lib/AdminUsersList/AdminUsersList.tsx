@@ -88,11 +88,11 @@ function AdminUsersList() {
 
   return (
     <MainContainer>
-      <StyledInfinityScroll
-        loadMore={fetchData}
-        hasMore={hasMore}
-      >
-        <StyledRadioGroup value={userId} onChange={handleUserIdAndStatusChange}>
+      <StyledRadioGroup value={userId} onChange={handleUserIdAndStatusChange}>
+        <StyledInfinityScroll
+          loadMore={fetchData}
+          hasMore={hasMore}
+        >
           {data.map((user : AdminUserInterface) => (
             <UserAndRadio key={user.id}>
               <User
@@ -106,8 +106,8 @@ function AdminUsersList() {
               <Radio value={user.id} />
             </UserAndRadio>
           ))}
-        </StyledRadioGroup>
-      </StyledInfinityScroll>
+        </StyledInfinityScroll>
+      </StyledRadioGroup>
       <AppBar position="sticky" color="primary" sx={{ top: 'auto', bottom: 0 }}>
         <Toolbar>
           <Button type="button" onClick={handleOpeningDrawer}>Filters</Button>
