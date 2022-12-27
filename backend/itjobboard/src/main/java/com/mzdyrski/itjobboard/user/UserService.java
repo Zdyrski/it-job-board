@@ -1,19 +1,18 @@
 package com.mzdyrski.itjobboard.user;
 
+import com.mzdyrski.itjobboard.email.EmailService;
 import com.mzdyrski.itjobboard.exception.BadRequestDataException;
 import com.mzdyrski.itjobboard.exception.InvalidEmailException;
 import com.mzdyrski.itjobboard.exception.UserExistsException;
 import com.mzdyrski.itjobboard.security.JWTTokenProvider;
-import com.mzdyrski.itjobboard.email.EmailService;
-import com.mzdyrski.itjobboard.user.dto.ChangePasswordData;
-import com.mzdyrski.itjobboard.user.dto.RegisterData;
-import com.mzdyrski.itjobboard.user.dto.UserStatusData;
+import com.mzdyrski.itjobboard.user.dto.*;
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.bson.types.Binary;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,10 +23,12 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
-import static com.mzdyrski.itjobboard.security.SecurityConstants.TOKEN_HEADER;
 import static com.mzdyrski.itjobboard.email.EmailType.ACCOUNT_CREATED;
+import static com.mzdyrski.itjobboard.security.SecurityConstants.TOKEN_HEADER;
 import static com.mzdyrski.itjobboard.user.Role.ROLE_EMPLOYEE;
+import static com.mzdyrski.itjobboard.user.Role.ROLE_EMPLOYER;
 
 @RequiredArgsConstructor
 @Service
@@ -35,7 +36,6 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final ConfirmationTokenRepository tokenRepository;
-    private final EmployeesCvRepository cvRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final LoginAttemptService loginAttemptService;
     private final JWTTokenProvider jwtTokenProvider;
@@ -84,49 +84,84 @@ public class UserService implements UserDetailsService {
                 var encodedNew = encodedPassword(data.newPassword());
                 user.setPassword(encodedNew);
                 userRepository.save(user);
-            }else {
+            } else {
                 throw new BadRequestDataException("Wrong password");
             }
         }
     }
 
-    public void resetPassword(String email) {
-        var user = findUserByEmail(email);
-        var newPassword = RandomStringUtils.randomAlphanumeric(9);
-        var encodedNewPassword = passwordEncoder.encode(newPassword);
-        user.setPassword(encodedNewPassword);
-        // TODO send email
-        userRepository.save(user);
-    }
-
-    public void updateEmployeeCv(Employee employee, MultipartFile file) throws IOException {
-        if (!Objects.equals(employee.getRole(), ROLE_EMPLOYEE.name())) {
-            return;
+    public String updateEmployeeCv(String authorizationHeader, MultipartFile file) throws IOException {
+        var user = getUserFromTokenHeader(authorizationHeader);
+        if (!Objects.equals(user.getRole(), ROLE_EMPLOYEE.name())) {
+            return null;
         }
         var cv = new EmployeesCv();
-        cv.setEmployeeId(employee.getId());
+        cv.setEmployeeId(user.getId());
         cv.setFileName(file.getOriginalFilename());
         cv.setFileType(file.getContentType());
         cv.setFileSize(file.getSize());
         cv.setFile(new Binary(file.getBytes()));
-        cvRepository.save(cv);
+        var savedCV = mongoTemplate.save(cv, "employees_cvs");
+        return savedCV.getFileName();
     }
 
     public List<User> getUsersByFilters(Aggregation aggregation) {
         return mongoTemplate.aggregate(aggregation, "users", User.class).getMappedResults();
     }
 
-    public void updateUserStatus(String userId, UserStatusData data) {
+    public UserStatusUpdateData updateUserStatus(String userId, UserStatusData data) {
         var user = userRepository.findById(userId).orElseThrow();
         user.setLocked(data.locked());
         user.setActive(data.active());
         userRepository.save(user);
+        return new UserStatusUpdateData(userId, user.isLocked(), user.isActive());
     }
 
     public User getUserFromTokenHeader(String authorizationHeader) {
         var token = StringUtils.remove(authorizationHeader, TOKEN_HEADER);
         var email = jwtTokenProvider.getSubject(token);
         return findUserByEmail(email);
+    }
+
+    public UserInfoData getUserData(String authorizationHeader) {
+        var user = getUserFromTokenHeader(authorizationHeader);
+        if (Objects.equals(user.getRole(), ROLE_EMPLOYER.name())) {
+            var employer = Optional.ofNullable(mongoTemplate.findById(user.getId(), Employer.class, "users")).orElseThrow();
+            return new UserInfoData(employer.getEmail(),
+                    employer.getRole(),
+                    employer.getJoinDate(),
+                    null,
+                    null,
+                    null,
+                    employer.getCompanyName(),
+                    employer.getCompanyLogoUrl(),
+                    employer.getCompanySiteUrl(),
+                    employer.getCompanySize());
+        } else if (Objects.equals(user.getRole(), ROLE_EMPLOYEE.name())) {
+            var employee = Optional.ofNullable(mongoTemplate.findById(user.getId(), Employee.class, "users")).orElseThrow();
+            var cv = Optional.ofNullable(
+                    mongoTemplate.findOne(new Query(new Criteria("employeeId").is(user.getId())), EmployeesCv.class, "employees_cvs"));
+            return new UserInfoData(employee.getEmail(),
+                    employee.getRole(),
+                    employee.getJoinDate(),
+                    employee.getFirstName(),
+                    employee.getLastName(),
+                    cv.map(EmployeesCv::getFileName).orElse(null),
+                    null,
+                    null,
+                    null,
+                    null);
+        }
+        return new UserInfoData(user.getEmail(),
+                user.getRole(),
+                user.getJoinDate(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null);
     }
 
     private void validateLoginAttempt(User user) {

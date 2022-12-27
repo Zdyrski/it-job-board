@@ -132,8 +132,6 @@ function OffersFilterDrawer({ open, handleOpen } : FilterDrawerInterface) {
       if (response.status === 200) {
         setOptions(response.data);
       }
-    }).catch((error) => {
-      console.log(error);
     });
   }, []);
 

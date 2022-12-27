@@ -27,7 +27,6 @@ const SKILL_LEVEL_MAP = new Map([
 const initialSkillLvl = 3;
 
 function TechStackAdder({ errorsState, techStack, setTechStack }: TechStackInterface) {
-  // TODO call to tags api
   const [newSkillName, setNewSkillName] = useState<string | undefined>('');
   const [newSkillLvl, setNewSkillLvl] = useState<number | null>(initialSkillLvl);
   const [options, setOptions] = useState<string[]>([]);
@@ -52,11 +51,8 @@ function TechStackAdder({ errorsState, techStack, setTechStack }: TechStackInter
   useEffect(() => {
     axios.get(TAGS_URL).then((response) => {
       if (response.status === 200) {
-        console.log(response);
         setOptions(response.data);
       }
-    }).catch((error) => {
-      console.log(error);
     });
   }, []);
 

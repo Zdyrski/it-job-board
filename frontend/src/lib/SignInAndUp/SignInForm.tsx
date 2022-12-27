@@ -25,7 +25,6 @@ const initialResponseState = {
 };
 
 function SignInForm() {
-  // TODO validation
   const [state, setState] = useState(initialState);
   const [responseState, setResponseState] = useState(initialResponseState);
   const navigate = useNavigate();
@@ -66,14 +65,12 @@ function SignInForm() {
     const signInData = { email: state.email, password: state.password };
     axios.post(SIGN_IN_URL, signInData).then((response) => {
       if (response.status === 200) {
-        console.log(response);
         localStorage.setItem('token', response.headers.token);
         setSuccessAlert();
         setState(initialState);
         setTimeout(() => navigate('/'), 2000);
       }
     }).catch((error) => {
-      console.log(error);
       switch (error.response.status) {
         case 400: { setErrorAlert('Wrong email and/or password.'); break; }
         case 401: { setErrorAlert('Tried to sign in too many times, please wait 15 min.'); break; }

@@ -6,7 +6,6 @@ export const getHeaders = () => {
     'Content-Type': 'application/json',
   };
   if (token !== null) {
-    console.log(jwtDecode(token));
     (result as any).Authorization = `Bearer ${token}`;
   }
   return result;

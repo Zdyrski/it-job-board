@@ -1,10 +1,9 @@
-/* eslint-disable max-len */
-/* eslint-disable no-unused-vars */
 import {
   Radio, RadioGroup, FormControlLabel, Checkbox, Collapse, Autocomplete, createFilterOptions, Alert,
 } from '@mui/material';
 import axios from 'axios';
 import React, { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import _ from 'lodash';
@@ -13,11 +12,13 @@ import OfferDataContext from '../../contexts/OfferDataContext';
 import GlitchedButton from '../Buttons/GlitchedButton/GlitchedButton';
 import { StyledTextField } from '../Inputs/Inputs.styled';
 import {
-  MainContainer, SubContainer, Title, InputsContainer, BackgroundContainer, MoneyContainer, EditorContainer,
+  MainContainer, SubContainer, Title, InputsContainer,
+  BackgroundContainer, MoneyContainer, EditorContainer,
 } from './OfferAdder.styled';
 import TechStackAdder from './TechStackAdder';
 import {
-  COUNTRY_LIST, OFFER_MAX_TAGS_NUMBER, OFFER_MIN_TAGS_NUMBER, REGEX_OFFER_CITY, REGEX_OFFER_STREET, REGEX_OFFER_TITLE,
+  COUNTRY_LIST, OFFER_MAX_TAGS_NUMBER, OFFER_MIN_TAGS_NUMBER,
+  REGEX_OFFER_CITY, REGEX_OFFER_STREET, REGEX_OFFER_TITLE,
 } from '../../utils/constants';
 import MoneySlider from '../MoneySlider/MoneySlider';
 
@@ -57,7 +58,6 @@ const initialErrorsState = {
 };
 
 function OfferAdder() {
-  // TODO validation
   const {
     offerData,
     setOfferData,
@@ -78,6 +78,8 @@ function OfferAdder() {
   } = useContext(OfferDataContext);
 
   const [errorsState, setErrorsState] = useState(initialErrorsState);
+
+  const navigate = useNavigate();
 
   const handleOfferChange = (e : React.ChangeEvent<HTMLInputElement>) => {
     setOfferData({ ...offerData, [e.target.name]: e.target.value });
@@ -163,21 +165,12 @@ function OfferAdder() {
       techStack,
       description,
     };
-    console.log(offerDataToSend);
-
     const headers = getHeaders();
-    console.log(headers);
+
     axios.post(ADD_OFFER_URL, offerDataToSend, { headers }).then((response) => {
       if (response.status === 201) {
-        console.log(response);
-        // localStorage.setItem('token', response.headers['token']);
-        // setSuccessAlert();
-        // setState(initialState);
-        // setTimeout(() => navigate('/'), 2000);
+        setTimeout(() => navigate(`/offers/${response.data}`), 2000);
       }
-    }).catch((error) => {
-      console.log(error);
-      // setErrorAlert(error);
     });
   };
 
@@ -261,40 +254,82 @@ function OfferAdder() {
           </Title>
           <InputsContainer>
             <FormControlLabel
-              control={<Checkbox checked={employmentContract.checked} onChange={() => setEmploymentContract({ ...employmentContract, checked: !employmentContract.checked })} />}
+              control={(
+                <Checkbox
+                  checked={employmentContract.checked}
+                  onChange={() => setEmploymentContract({ ...employmentContract, checked: !employmentContract.checked })}
+                />
+)}
               label="Contract of employment"
             />
             <Collapse in={employmentContract.checked}>
               <MoneyContainer>
-                <MoneySlider disabled={employmentContract.undisclosed} value={employmentContract.money} setValue={setEmploymentContract} />
+                <MoneySlider
+                  disabled={employmentContract.undisclosed}
+                  value={employmentContract.money}
+                  setValue={setEmploymentContract}
+                />
                 <FormControlLabel
-                  control={<Checkbox checked={employmentContract.undisclosed} onChange={() => setEmploymentContract({ ...employmentContract, undisclosed: !employmentContract.undisclosed })} />}
+                  control={(
+                    <Checkbox
+                      checked={employmentContract.undisclosed}
+                      onChange={() => setEmploymentContract({ ...employmentContract, undisclosed: !employmentContract.undisclosed })}
+                    />
+)}
                   label="Undisclosed"
                 />
               </MoneyContainer>
             </Collapse>
             <FormControlLabel
-              control={<Checkbox checked={mandateContract.checked} onChange={() => setMndateContract({ ...mandateContract, checked: !mandateContract.checked })} />}
+              control={(
+                <Checkbox
+                  checked={mandateContract.checked}
+                  onChange={() => setMndateContract({ ...mandateContract, checked: !mandateContract.checked })}
+                />
+)}
               label="Contract of mandate"
             />
             <Collapse in={mandateContract.checked}>
               <MoneyContainer>
-                <MoneySlider disabled={mandateContract.undisclosed} value={mandateContract.money} setValue={setMndateContract} />
+                <MoneySlider
+                  disabled={mandateContract.undisclosed}
+                  value={mandateContract.money}
+                  setValue={setMndateContract}
+                />
                 <FormControlLabel
-                  control={<Checkbox checked={mandateContract.undisclosed} onChange={() => setMndateContract({ ...mandateContract, undisclosed: !mandateContract.undisclosed })} />}
+                  control={(
+                    <Checkbox
+                      checked={mandateContract.undisclosed}
+                      onChange={() => setMndateContract({ ...mandateContract, undisclosed: !mandateContract.undisclosed })}
+                    />
+)}
                   label="Undisclosed"
                 />
               </MoneyContainer>
             </Collapse>
             <FormControlLabel
-              control={<Checkbox checked={b2bContract.checked} onChange={() => setB2bContract({ ...b2bContract, checked: !b2bContract.checked })} />}
+              control={(
+                <Checkbox
+                  checked={b2bContract.checked}
+                  onChange={() => setB2bContract({ ...b2bContract, checked: !b2bContract.checked })}
+                />
+)}
               label="B2B"
             />
             <Collapse in={b2bContract.checked}>
               <MoneyContainer>
-                <MoneySlider disabled={b2bContract.undisclosed} value={b2bContract.money} setValue={setB2bContract} />
+                <MoneySlider
+                  disabled={b2bContract.undisclosed}
+                  value={b2bContract.money}
+                  setValue={setB2bContract}
+                />
                 <FormControlLabel
-                  control={<Checkbox checked={b2bContract.undisclosed} onChange={() => setB2bContract({ ...b2bContract, undisclosed: !b2bContract.undisclosed })} />}
+                  control={(
+                    <Checkbox
+                      checked={b2bContract.undisclosed}
+                      onChange={() => setB2bContract({ ...b2bContract, undisclosed: !b2bContract.undisclosed })}
+                    />
+)}
                   label="Undisclosed"
                 />
               </MoneyContainer>
@@ -322,7 +357,11 @@ function OfferAdder() {
             </RadioGroup>
           </InputsContainer>
         </SubContainer>
-        <TechStackAdder errorsState={errorsState.techStack} techStack={techStack} setTechStack={setTechStack} />
+        <TechStackAdder
+          errorsState={errorsState.techStack}
+          techStack={techStack}
+          setTechStack={setTechStack}
+        />
         <SubContainer>
           <Title>
             Offer Description *

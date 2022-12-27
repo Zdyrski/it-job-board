@@ -1,17 +1,21 @@
 package com.mzdyrski.itjobboard;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mzdyrski.itjobboard.email.EmailService;
 import com.mzdyrski.itjobboard.offer.Offer;
 import com.mzdyrski.itjobboard.offer.SchedulerService;
-import com.mzdyrski.itjobboard.user.*;
 import com.mzdyrski.itjobboard.offer.dto.AddressData;
 import com.mzdyrski.itjobboard.offer.dto.ContractData;
 import com.mzdyrski.itjobboard.offer.dto.SkillData;
 import com.mzdyrski.itjobboard.security.JWTTokenProvider;
-import com.mzdyrski.itjobboard.email.EmailService;
+import com.mzdyrski.itjobboard.user.Employee;
+import com.mzdyrski.itjobboard.user.Employer;
+import com.mzdyrski.itjobboard.user.User;
+import com.mzdyrski.itjobboard.user.UserSecurity;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -23,6 +27,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import java.time.Clock;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 
 import static com.mzdyrski.itjobboard.offer.ApprovalState.APPROVED;
@@ -50,7 +56,6 @@ public class TestBase {
     @Autowired
     protected BCryptPasswordEncoder passwordEncoder;
 
-    //    protected MongodExecutable mongodExecutable;
     @Autowired
     protected MongoTemplate mongoTemplate;
 
@@ -65,26 +70,11 @@ public class TestBase {
 
     }
 
-//    @BeforeEach
-//    void setupDb() throws IOException {
-//        String ip = "localhost";
-//        int port = 27017;
-//
-//        ImmutableMongodConfig mongodConfig = MongodConfig
-//                .builder()
-//                .version(Version.Main.PRODUCTION)
-//                .net(new Net(ip, port, Network.localhostIsIPv6()))
-//                .build();
-//
-//        MongodStarter starter = MongodStarter.getDefaultInstance();
-//        mongodExecutable = starter.prepare(mongodConfig);
-//        mongodExecutable.start();
-//    }
-//
-//    @AfterEach
-//    void cleanDb(){
-//        mongodExecutable.stop();
-//    }
+    @BeforeEach
+    public void mockClock() {
+        Mockito.when(clock.instant()).thenReturn(LocalDateTime.now().toInstant(ZoneOffset.UTC));
+        Mockito.when(clock.getZone()).thenReturn(ZoneOffset.UTC);
+    }
 
     @AfterEach
     public void cleanDb() {
@@ -104,6 +94,7 @@ public class TestBase {
 
     @BeforeEach
     protected void saveOfferToDb() {
+        mockClock();
         var offer = getOffer();
         mongoTemplate.save(offer, "offers");
     }
@@ -170,7 +161,7 @@ public class TestBase {
         offer.setExperienceLevel(MEDIUM.value);
         offer.setTechStack(new SkillData[]{new SkillData("Java", 5), new SkillData("React", 5)});
         offer.setTags(new String[]{"Java"});
-        offer.setDate(new Date(clock.millis()));
+        offer.setDate(new Date(clock.instant().toEpochMilli()));
         offer.setDescription("description");
         offer.setApprovalStatus(APPROVED.value);
         offer.setArchived(false);

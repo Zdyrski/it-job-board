@@ -49,11 +49,9 @@ function OfferDetailed() {
     }
     axios.post(APPLICATIONS_URL + id, null, { headers }).then((response) => {
       if (response.status === 200) {
-        console.log(response);
         setCanApply(response.data);
       }
-    }).catch((error) => {
-      console.log(error);
+    }).catch((_error) => {
       setCanApply('ERROR');
     });
   };
@@ -61,7 +59,6 @@ function OfferDetailed() {
   useEffect(() => { // get offer details
     axios.get(OFFERS_URL + id, { headers }).then((response) => {
       if (response.status === 200) {
-        console.log(response);
         setData(response.data);
         setErrorState(initialErrorState);
       }
@@ -81,11 +78,8 @@ function OfferDetailed() {
     }
     axios.get(APPLICATIONS_URL + id, { headers }).then((response) => {
       if (response.status === 200) {
-        console.log(response);
         setCanApply(response.data);
       }
-    }).catch((error) => {
-      console.log(error);
     });
   }, []);
 

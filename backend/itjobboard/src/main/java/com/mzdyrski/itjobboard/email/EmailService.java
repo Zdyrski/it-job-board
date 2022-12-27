@@ -140,7 +140,6 @@ public class EmailService {
                         ITJobBoard Team""", placeholders[0], PORTAL_URL, placeholders[1]);
             }
         }
-        //TODO custom exception maybe
         throw new InvalidParameterException();
     }
 }

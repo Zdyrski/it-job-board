@@ -7,6 +7,8 @@ export const REGEX_COMPANY_SITE_URL = /^https?:\/\/(?:www\.)?[-a-zA-Z0-9@:%._+~#
 export const REGEX_COMPANY_LOGO_URL = /(http(s?):)([/|.|\w|\s|-])*\.(?:jpg|png|jpeg|svg)/;
 
 // OFFER CONSTANTS
+export const REQUEST_LIMIT = 20;
+
 export const REGEX_OFFER_TITLE = /^([a-zA-Z0-9 -.[\]]{5,50})$/;
 export const REGEX_OFFER_CITY = /^([a-zA-Z ]{5,30})$/;
 export const REGEX_OFFER_STREET = /^([a-zA-Z0-9 ]{5,30})$/;

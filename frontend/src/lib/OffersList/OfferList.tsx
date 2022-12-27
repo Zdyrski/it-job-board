@@ -2,6 +2,7 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { REQUEST_LIMIT } from '../../utils/constants';
 import { getHeaders } from '../../utils/helperFunctions';
 import { OffersListInterface, OfferInterface } from '../../utils/types';
 import Offer from './Offer';
@@ -14,11 +15,10 @@ function OfferList({ link } : OffersListInterface) {
   const [searchParams] = useSearchParams();
 
   const fetchData = () => {
-    // TODO make pagination work
     const headers = getHeaders();
     const params = new URLSearchParams(window.location.search);
     params.append('page', page.toString());
-    params.append('limit', '10');
+    params.append('limit', REQUEST_LIMIT.toString());
 
     const config = {
       headers,
@@ -27,18 +27,15 @@ function OfferList({ link } : OffersListInterface) {
 
     axios.get(link, config).then((response) => {
       if (response.status === 200) {
-        console.log(response);
         const offers:never[] = response.data;
         setData([...data, ...offers]);
-        if (offers.length < 10) {
+        if (offers.length < REQUEST_LIMIT) {
           setHasMore(false);
         } else {
           setPage((prev) => prev + 1);
           setHasMore(true);
         }
       }
-    }).catch((error) => {
-      console.log(error);
     });
   };
 

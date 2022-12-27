@@ -54,7 +54,6 @@ const initialResponseState = {
 };
 
 function SignUpForm() {
-  // TODO validation
   const [state, setState] = useState(initialState);
   const [errorsState, setErrorsState] = useState(initialErrorsState);
   const [logoSrc, setLogoSrc] = useState('');
@@ -129,7 +128,6 @@ function SignUpForm() {
       tempErrorState.password2 = true;
     }
     setErrorsState(tempErrorState);
-    console.log(tempErrorState);
     if (_.isEqual(tempErrorState, initialErrorsState)) {
       return true;
     }
@@ -163,24 +161,20 @@ function SignUpForm() {
 
   const handleSignUp = () => {
     if (!validateData()) {
-      console.log('NOT EQ');
       return;
     }
 
     const signUpData = getSignUpData();
-    console.log(signUpData);
     if (signUpData === null) {
       return;
     }
     axios.post(SIGN_UP_URL, signUpData).then((response) => {
       if (response.status === 201) {
-        console.log(response);
         setSuccessAlert();
         setState(initialState);
         setTimeout(() => navigate('/sign-in'), 2000);
       }
     }).catch((error) => {
-      console.log(error);
       setErrorAlert(error);
     });
   };

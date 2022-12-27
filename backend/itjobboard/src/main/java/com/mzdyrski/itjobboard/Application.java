@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.time.Clock;
+
 @EnableAsync
 @SpringBootApplication
 public class Application {
@@ -17,5 +19,10 @@ public class Application {
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder(){
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public Clock clock(){
+        return Clock.systemDefaultZone();
     }
 }

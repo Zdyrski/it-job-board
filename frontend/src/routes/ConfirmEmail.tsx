@@ -51,12 +51,10 @@ function ConfirmEmail() {
     };
     axios.get(CONFIRM_EMAIL_URL, config).then((response) => {
       if (response.status === 200) {
-        console.log(response);
         setSuccessAlert();
         setTimeout(() => navigate('/sign-in'), 5000);
       }
     }).catch((error) => {
-      console.log(error);
       switch (error.response.status) {
         case 400: { setErrorAlert('Invalid token.'); break; }
         case 401: { setErrorAlert('Your confirmation token has expired.'); break; }

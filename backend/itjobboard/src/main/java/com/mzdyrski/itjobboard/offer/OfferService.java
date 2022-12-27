@@ -56,7 +56,6 @@ public class OfferService {
     }
 
     public List<ListElOfferData> getOffersByFilters(Aggregation aggregation) {
-        //TODO applying possible filters and connect with employer img src
         var offers = mongoTemplate.aggregate(aggregation, "offers", Offer.class);
         var result = new ArrayList<ListElOfferData>();
         for (Offer offer : offers) {
@@ -66,13 +65,11 @@ public class OfferService {
     }
 
     public List<ListElWithStatusOfferData> getOffersByAdminFilters(Aggregation aggregation) {
-        //TODO applying possible filters and connect with employer img src
         var offers = mongoTemplate.aggregate(aggregation, "offers", Offer.class);
         var result = new ArrayList<ListElWithStatusOfferData>();
         for (Offer offer : offers) {
             result.add(getListElWithStatusForGivenOffer(offer));
         }
-
         return result;
     }
 
@@ -118,9 +115,9 @@ public class OfferService {
         return savedOffer.getId();
     }
 
-    public void setOfferStatus(User admin, String offerId, OfferStatusData data) throws MessagingException {
+    public OfferStatusUpdateData setOfferStatus(User admin, String offerId, OfferStatusData data) throws MessagingException {
         if (!Objects.equals(admin.getRole(), ROLE_ADMIN.name())) {
-            return;
+            return null;
         }
         var offer = offerRepository.findById(offerId).orElseThrow();
         var employer = getEmployerById(offer.getEmployerId());
@@ -130,6 +127,7 @@ public class OfferService {
         if(!savedOffer.isArchived() && Objects.equals(savedOffer.getApprovalStatus(), APPROVED.value)){
             emailService.sendEmail(employer.getEmail(), OFFER_APPROVED, savedOffer.getTitle(), savedOffer.getId());
         }
+        return new OfferStatusUpdateData(savedOffer.getId(), savedOffer.getApprovalStatus(), savedOffer.isArchived());
     }
 
     public void archiveOffer(String id) {

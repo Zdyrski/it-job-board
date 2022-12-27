@@ -9,7 +9,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.newAggregation;
@@ -18,7 +20,7 @@ import static org.springframework.data.mongodb.core.aggregation.Aggregation.newA
 @Service
 public class SchedulerService {
 
-//    private final Clock clock;
+    private final Clock clock;
     private final MongoTemplate mongoTemplate;
     @Value("${scheduler.offset.months}")
     private Long monthsOffset;
@@ -33,9 +35,9 @@ public class SchedulerService {
     }
 
     private Aggregation getAggregation() {
-        var date = LocalDateTime.now().minusMonths(monthsOffset);
+        var date = new Date(clock.instant().toEpochMilli() - Duration.ofDays(60).toMillis());
         var notArchivedCriteria = match(new Criteria("archived").is(false));
-        var dateCriteria = match(new Criteria("date").gte(date));
+        var dateCriteria = match(new Criteria("date").lt(date));
         return newAggregation(notArchivedCriteria, dateCriteria);
     }
 }

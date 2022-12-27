@@ -65,19 +65,15 @@ public class UserController {
     }
 
     @GetMapping("/account")
-    public Mono<ResponseEntity<User>> account(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
-        var user = userService.getUserFromTokenHeader(authorizationHeader);
-        // TODO
-        user.setPassword("XD");
-        return Mono.just(new ResponseEntity<>(user, OK));
+    public Mono<ResponseEntity<UserInfoData>> account(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader) {
+        var userData = userService.getUserData(authorizationHeader);
+        return Mono.just(new ResponseEntity<>(userData, OK));
     }
 
     @PostMapping(value = "/account/cv", consumes = {"multipart/mixed", "multipart/form-data"})
-    public Mono<ResponseEntity<User>> employeeCvUpdate(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @RequestPart(name = "file") MultipartFile multipartFile) throws IOException {
-        var user = userService.getUserFromTokenHeader(authorizationHeader);
-        // TODO validacja pliku
-        userService.updateEmployeeCv((Employee) user, multipartFile);
-        return Mono.just(new ResponseEntity<>(OK));
+    public Mono<ResponseEntity<String>> employeeCvUpdate(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @RequestPart(name = "file") MultipartFile multipartFile) throws IOException {
+        var fileName = userService.updateEmployeeCv(authorizationHeader, multipartFile);
+        return Mono.just(new ResponseEntity<>(fileName, OK));
     }
 
     @PostMapping("/account/password")
@@ -86,15 +82,8 @@ public class UserController {
         return Mono.just(new ResponseEntity<>(OK));
     }
 
-    @PostMapping("/resetpassword")
-    public Mono<ResponseEntity<String>> passwordUpdate(@Valid @RequestBody ResetPasswordData data) {
-        userService.resetPassword(data.email());
-        return Mono.just(new ResponseEntity<>("PASSWORD RESETED", OK));
-    }
-
     @GetMapping("/admin")
-    public Mono<ResponseEntity<List<User>>> getUsers(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader,
-                                                     @RequestParam Optional<String> userId,
+    public Mono<ResponseEntity<List<User>>> getUsers(@RequestParam Optional<String> userId,
                                                      @RequestParam Optional<String> email,
                                                      @RequestParam Optional<String> role,
                                                      @RequestParam Optional<Boolean> active,
@@ -129,11 +118,9 @@ public class UserController {
     }
 
     @PostMapping("/admin/{userId}")
-    public Mono<ResponseEntity<List<User>>> updateUser(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @PathVariable String userId, @Valid @RequestBody UserStatusData data) {
-        var admin = userService.getUserFromTokenHeader(authorizationHeader);
-        // TODO
-        userService.updateUserStatus(userId, data);
-        return Mono.just(new ResponseEntity<>(OK));
+    public Mono<ResponseEntity<UserStatusUpdateData>> updateUser(@PathVariable String userId, @Valid @RequestBody UserStatusData data) {
+        var update = userService.updateUserStatus(userId, data);
+        return Mono.just(new ResponseEntity<>(update, OK));
     }
 
     private HttpHeaders getJwtHeader(UserSecurity userSecurity) {

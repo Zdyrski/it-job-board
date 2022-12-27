@@ -11,6 +11,7 @@ import { StyledInfinityScroll, StyledRadioGroup } from '../OffersList/Offer.styl
 import { MainContainer, UserAndRadio } from './AdminUsersList.styled';
 import User from './User';
 import AdminUsersFilterDrawer from '../FilterDrawer/AdminUsersFilterDrawer';
+import { REQUEST_LIMIT } from '../../utils/constants';
 
 const ADMIN_USERS_URL = 'http://localhost:8080/users/admin';
 
@@ -20,7 +21,7 @@ const initialUserState = {
 };
 
 function AdminUsersList() {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<any[]>([]);
   const [hasMore, setHasMore] = useState(false);
   const [userId, setUserId] = useState('');
   const [userState, setUserState] = useState(initialUserState);
@@ -36,7 +37,7 @@ function AdminUsersList() {
     const headers = getHeaders();
     const params = new URLSearchParams(window.location.search);
     params.append('page', page.toString());
-    params.append('limit', '10');
+    params.append('limit', REQUEST_LIMIT.toString());
 
     const config = {
       headers,
@@ -44,23 +45,19 @@ function AdminUsersList() {
     };
     axios.get(ADMIN_USERS_URL, config).then((response) => {
       if (response.status === 200) {
-        const users:never[] = response.data;
-        console.log(users);
+        const users = response.data;
         setData([...data, ...users]);
-        if (users.length < 10) {
+        if (users.length < REQUEST_LIMIT) {
           setHasMore(false);
         } else {
           setPage((prev) => prev + 1);
           setHasMore(true);
         }
       }
-    }).catch((error) => {
-      console.log(error);
     });
   };
 
   const handleUserIdAndStatusChange = (e : React.ChangeEvent<HTMLInputElement>) => {
-    console.log(userId);
     setUserId(e.target.value);
   };
 
@@ -70,13 +67,11 @@ function AdminUsersList() {
 
   const handleSetStatus = () => {
     const headers = getHeaders();
-    console.log(userId);
     axios.post(`${ADMIN_USERS_URL}/${userId}`, userState, { headers }).then((response) => {
       if (response.status === 200) {
-        console.log(response.data);
+        const updatedData = data.map((user) => (user.id === response.data.userId ? { ...user, active: response.data.active, locked: response.data.locked } : user));
+        setData(updatedData);
       }
-    }).catch((error) => {
-      console.log(error);
     });
   };
 

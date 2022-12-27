@@ -30,6 +30,7 @@ const initialUserState = {
 const initialEmployeeState = {
   firstName: '',
   lastName: '',
+  cvFileName: '',
 };
 
 const initialEmployerState = {
@@ -87,11 +88,8 @@ function AccountSettings() {
     headers['Content-Type'] = 'multipart/form-data';
     axios.post(CV_UPLOAD_URL, formData, { headers }).then((response) => {
       if (response.status === 200) {
-        console.log(response);
-        // TODO something about cv
+        setEmployeeState({ ...employeeState, cvFileName: response.data });
       }
-    }).catch((error) => {
-      console.log(error);
     });
   };
 
@@ -120,12 +118,10 @@ function AccountSettings() {
     };
     axios.post(PASSWORD_CHANGE_URL, data, { headers }).then((response) => {
       if (response.status === 200) {
-        console.log(response);
         setPasswords(initialPasswords);
         setSuccessAlert();
       }
     }).catch((error) => {
-      console.log(error);
       switch (error.response.status) {
         case 400: { setErrorAlert('Wrong password'); break; }
         default: { setErrorAlert('Error'); break; }
@@ -188,6 +184,10 @@ function AccountSettings() {
   const employeeCV = (
     <SubContainer>
       <Title>CV</Title>
+      <DetailRowContainer>
+        <div>File name:</div>
+        <div>{employeeState.cvFileName}</div>
+      </DetailRowContainer>
       <input
         type="file"
         accept=".pdf"
@@ -219,13 +219,10 @@ function AccountSettings() {
           setEmployeeState({
             firstName: data.firstName,
             lastName: data.lastName,
+            cvFileName: data.cvFileName,
           });
         }
-        console.log(response);
       }
-      // TODO something
-    }).catch((error) => {
-      console.log(error);
     });
   }, []);
 
@@ -246,9 +243,30 @@ function AccountSettings() {
             errorMessage={responseState.errorMessage}
             successMessage={responseState.successMessage}
           />
-          <StyledTextField name="oldPassword" value={passwords.oldPassword} onChange={handlePasswordsChange} type={passwords.showPassword ? 'text' : 'password'} label="Old password" variant="standard" />
-          <StyledTextField name="newPassword" value={passwords.newPassword} onChange={handlePasswordsChange} type={passwords.showPassword ? 'text' : 'password'} label="New password" variant="standard" />
-          <StyledTextField name="newPassword2" value={passwords.newPassword2} onChange={handlePasswordsChange} type={passwords.showPassword ? 'text' : 'password'} label="Repeat new password" variant="standard" />
+          <StyledTextField
+            name="oldPassword"
+            value={passwords.oldPassword}
+            onChange={handlePasswordsChange}
+            type={passwords.showPassword ? 'text' : 'password'}
+            label="Old password"
+            variant="standard"
+          />
+          <StyledTextField
+            name="newPassword"
+            value={passwords.newPassword}
+            onChange={handlePasswordsChange}
+            type={passwords.showPassword ? 'text' : 'password'}
+            label="New password"
+            variant="standard"
+          />
+          <StyledTextField
+            name="newPassword2"
+            value={passwords.newPassword2}
+            onChange={handlePasswordsChange}
+            type={passwords.showPassword ? 'text' : 'password'}
+            label="Repeat new password"
+            variant="standard"
+          />
           <IconButton
             onClick={handleClickShowPassword}
             onMouseDown={handleMouseDownPassword}
