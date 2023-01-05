@@ -139,6 +139,17 @@ public class EmailService {
                         We wish you luck in your recruitments!
                         ITJobBoard Team""", placeholders[0], PORTAL_URL, placeholders[1]);
             }
+            case OFFER_DISAPPROVED -> {
+                return String.format("""
+                        Hello,
+                        your offer %s on ITJobBoard has been rejected, because it wasn't descriptive enough or wasn't a proper offer at all.
+                        Below is its address.
+                        %s/offers/%s
+                        If you have doubts please contact us.
+                        
+                        We wish you luck in your recruitments!
+                        ITJobBoard Team""", placeholders[0], PORTAL_URL, placeholders[1]);
+            }
         }
         throw new InvalidParameterException();
     }

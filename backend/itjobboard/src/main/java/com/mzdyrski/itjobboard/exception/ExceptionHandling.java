@@ -84,11 +84,10 @@ public class ExceptionHandling implements ErrorController {
         return createHttpResponse(BAD_REQUEST, FILE_SIZE_EXCEEDED);
     }
 
-//    TODO uncomment
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<HttpResponse> internalServerErrorException(Exception e) {
-//        return createHttpResponse(INTERNAL_SERVER_ERROR, e.getMessage());
-//    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<HttpResponse> internalServerErrorException(Exception e) {
+        return createHttpResponse(INTERNAL_SERVER_ERROR, e.getMessage());
+    }
 
     private ResponseEntity<HttpResponse> createHttpResponse(HttpStatus httpStatus, String message) {
         return new ResponseEntity<>(new HttpResponse(httpStatus.value(), httpStatus, httpStatus.getReasonPhrase().toUpperCase(), message.toUpperCase()), httpStatus);

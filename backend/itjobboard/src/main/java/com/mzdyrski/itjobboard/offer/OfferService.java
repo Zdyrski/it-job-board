@@ -2,8 +2,8 @@ package com.mzdyrski.itjobboard.offer;
 
 import com.mzdyrski.itjobboard.application.Application;
 import com.mzdyrski.itjobboard.application.ApplicationRepository;
-import com.mzdyrski.itjobboard.exception.OfferNotAvailableException;
 import com.mzdyrski.itjobboard.email.EmailService;
+import com.mzdyrski.itjobboard.exception.OfferNotAvailableException;
 import com.mzdyrski.itjobboard.offer.dto.*;
 import com.mzdyrski.itjobboard.user.Employee;
 import com.mzdyrski.itjobboard.user.Employer;
@@ -16,11 +16,10 @@ import org.springframework.stereotype.Service;
 import javax.mail.MessagingException;
 import java.util.*;
 
-import static com.mzdyrski.itjobboard.offer.ApprovalState.APPROVED;
-import static com.mzdyrski.itjobboard.offer.ApprovalState.NOT_APPROVED;
-import static com.mzdyrski.itjobboard.email.EmailType.OFFER_ADDED;
-import static com.mzdyrski.itjobboard.email.EmailType.OFFER_APPROVED;
-import static com.mzdyrski.itjobboard.user.Role.*;
+import static com.mzdyrski.itjobboard.email.EmailType.*;
+import static com.mzdyrski.itjobboard.offer.ApprovalState.*;
+import static com.mzdyrski.itjobboard.user.Role.ROLE_ADMIN;
+import static com.mzdyrski.itjobboard.user.Role.ROLE_EMPLOYER;
 
 @RequiredArgsConstructor
 @Service
@@ -124,8 +123,10 @@ public class OfferService {
         offer.setApprovalStatus(data.approvalStatus());
         offer.setArchived(data.archived());
         var savedOffer = mongoTemplate.save(offer, "offers");
-        if(!savedOffer.isArchived() && Objects.equals(savedOffer.getApprovalStatus(), APPROVED.value)){
+        if (!savedOffer.isArchived() && Objects.equals(savedOffer.getApprovalStatus(), APPROVED.value)) {
             emailService.sendEmail(employer.getEmail(), OFFER_APPROVED, savedOffer.getTitle(), savedOffer.getId());
+        } else if (!savedOffer.isArchived() && Objects.equals(savedOffer.getApprovalStatus(), DISAPPROVED.value)) {
+            emailService.sendEmail(employer.getEmail(), OFFER_DISAPPROVED, savedOffer.getTitle(), savedOffer.getId());
         }
         return new OfferStatusUpdateData(savedOffer.getId(), savedOffer.getApprovalStatus(), savedOffer.isArchived());
     }
@@ -196,11 +197,11 @@ public class OfferService {
         return result.toArray(String[]::new);
     }
 
-    private Employee getEmployeeById(String id){
+    private Employee getEmployeeById(String id) {
         return mongoTemplate.findById(id, Employee.class, "users");
     }
 
-    private Employer getEmployerById(String id){
+    private Employer getEmployerById(String id) {
         return mongoTemplate.findById(id, Employer.class, "users");
     }
 }

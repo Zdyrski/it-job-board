@@ -164,7 +164,7 @@ public class OfferController {
     }
 
     @PostMapping("/admin/{id}")
-    public Mono<ResponseEntity<OfferStatusUpdateData>> approveOffer(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @PathVariable String id, @Valid @RequestBody OfferStatusData data) throws MessagingException {
+    public Mono<ResponseEntity<OfferStatusUpdateData>> updateOffer(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @PathVariable String id, @Valid @RequestBody OfferStatusData data) throws MessagingException {
         var admin = userService.getUserFromTokenHeader(authorizationHeader);
         var updatedOffer = offerService.setOfferStatus(admin, id, data);
         return Mono.just(new ResponseEntity<>(updatedOffer, OK));
